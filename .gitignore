@@ -1,0 +1,12 @@
+node_modules
+dist
+.vercel
+
+# Environment files (secrets). Only the examples are committed.
+.env
+.env.*
+!.env.example
+
+*.db
+*.db-journal
+.DS_Store

@@ -1,0 +1,6 @@
+# Store text with LF line endings (Windows locally, Linux on Vercel)
+* text=auto eol=lf
+
+# Binary files
+*.png binary
+*.woff2 binary

@@ -1,0 +1,607 @@
+/* ===== General ===== */
+
+.muted {
+  color: var(--muted);
+  font-size: 0.9em;
+}
+
+.hint {
+  color: var(--muted);
+  font-size: 0.9em;
+  margin: 8px 0 0;
+}
+
+.cardTitle {
+  font-size: 1.1rem;
+  margin-block-end: 12px;
+}
+
+/* English text inside Persian sentences */
+.latin {
+  font-weight: 600;
+  padding-inline: 0.15em;
+  white-space: nowrap;
+}
+
+/* ===== Path page ===== */
+
+.stageList {
+  grid-template-columns: minmax(0, 1fr);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+
+.stage {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--space);
+  box-shadow: var(--shadow);
+}
+
+.stage[data-status="coming-soon"],
+.stage[data-status="locked"] {
+  background: transparent;
+  box-shadow: none;
+  border-style: dashed;
+}
+
+.stage[data-status="coming-soon"] .stageText,
+.stage[data-status="locked"] .stageText {
+  opacity: 0.65;
+}
+
+.stage[data-status="in-progress"] {
+  border-color: var(--accent);
+}
+
+.stageHead {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: start;
+  gap: 12px;
+}
+
+.stageNum {
+  display: grid;
+  place-items: center;
+  inline-size: 36px;
+  block-size: 36px;
+  border-radius: 50%;
+  background: var(--surface-2);
+  font-weight: 700;
+}
+
+.stage[data-status="in-progress"] .stageNum {
+  background: var(--accent);
+  color: var(--accent-contrast);
+}
+
+.stage[data-status="done"] .stageNum {
+  background: var(--success);
+  color: var(--surface);
+}
+
+.stageTitle {
+  font-size: 1.05rem;
+  margin: 0;
+}
+
+.stageGoal {
+  margin: 4px 0;
+  font-size: 0.95em;
+}
+
+.lessonLinks {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.lessonLink {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-block-size: 48px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: var(--surface-2);
+  text-decoration: none;
+}
+
+.lessonLink:hover {
+  outline: 1px solid var(--accent);
+}
+
+.lessonLinkText {
+  flex: 1;
+  font-weight: 600;
+}
+
+.doneIcon {
+  color: var(--success);
+  flex-shrink: 0;
+}
+
+/* Status badge */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  background: var(--surface-2);
+  color: var(--muted);
+}
+
+.badge-in-progress {
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  color: var(--accent);
+}
+
+.badge-done {
+  background: color-mix(in srgb, var(--success) 18%, transparent);
+  color: var(--success);
+}
+
+/* ===== Lesson page ===== */
+
+.lessonPage {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+}
+
+/* Inside the lesson page, spacing comes from the grid gap */
+.lessonPage > * {
+  margin-block: 0 !important;
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 0.95em;
+  justify-self: start;
+}
+
+.goal {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  border-inline-start: 4px solid var(--accent);
+}
+
+.goalIcon {
+  color: var(--accent);
+  flex-shrink: 0;
+  margin-block-start: 4px;
+}
+
+.sections {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+}
+
+.section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--space);
+  scroll-margin-block-start: 76px; /* sticky header height */
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.section[data-active] {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent);
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-block-end: 8px;
+}
+
+.sectionNum {
+  display: grid;
+  place-items: center;
+  inline-size: 28px;
+  block-size: 28px;
+  border-radius: 8px;
+  background: var(--surface-2);
+  font-weight: 700;
+  font-size: 0.9em;
+  flex-shrink: 0;
+}
+
+.section[data-active] .sectionNum {
+  background: var(--accent);
+  color: var(--accent-contrast);
+}
+
+.sectionTitle {
+  flex: 1;
+  font-size: 1.05rem;
+  margin: 0;
+}
+
+.duration {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.sectionBody > * + * {
+  margin-block-start: 12px;
+}
+
+/* ===== Content blocks ===== */
+
+.paragraph {
+  margin: 0;
+}
+
+.blockTitle {
+  font-size: 0.95rem;
+  margin: 0 0 4px;
+}
+
+.list {
+  margin: 0;
+  padding-inline-start: 1.3em;
+}
+
+ol.list {
+  list-style-type: persian;
+}
+
+.list li + li {
+  margin-block-start: 6px;
+}
+
+.itemLabel {
+  color: var(--accent);
+}
+
+.tableWrap {
+  overflow-x: auto;
+}
+
+.table {
+  inline-size: 100%;
+  max-inline-size: 360px;
+  border-collapse: collapse;
+  font-size: 0.95em;
+}
+
+.table caption {
+  text-align: start;
+  color: var(--muted);
+  font-size: 0.9em;
+  padding-block-end: 6px;
+}
+
+.table th,
+.table td {
+  padding: 6px 12px;
+  border-block-end: 1px solid var(--border);
+  text-align: start;
+}
+
+.table th {
+  background: var(--surface-2);
+  font-weight: 600;
+}
+
+.callout {
+  display: flex;
+  gap: 10px;
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  border-inline-start: 4px solid var(--muted);
+}
+
+.calloutIcon {
+  flex-shrink: 0;
+  margin-block-start: 4px;
+}
+
+.calloutTitle {
+  display: block;
+}
+
+.tip {
+  border-color: var(--accent);
+}
+
+.tip .calloutIcon {
+  color: var(--accent);
+}
+
+.warning {
+  border-color: #c2410c;
+  background: color-mix(in srgb, #c2410c 10%, var(--surface));
+}
+
+.warning .calloutIcon {
+  color: #ea580c;
+}
+
+.note {
+  border-color: var(--blue);
+}
+
+.note .calloutIcon {
+  color: var(--blue);
+}
+
+/* ===== Timer ===== */
+
+.timerCard {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.timerIntro {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  flex: 1 1 240px;
+}
+
+.timerBar {
+  position: fixed;
+  z-index: 20;
+  inset-inline: 8px;
+  inset-block-end: calc(var(--nav-h) + env(safe-area-inset-bottom) + 8px);
+  overflow: hidden;
+  padding: 12px var(--space);
+  background: var(--surface);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 30px rgb(0 0 0 / 0.25);
+}
+
+.timerProgress {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline: 0;
+  block-size: 4px;
+  background: var(--accent);
+  transform-origin: right; /* RTL: grows from right to left */
+  transition: transform 0.25s linear;
+}
+
+.timerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.timerInfo {
+  display: grid;
+  min-inline-size: 0;
+}
+
+.timerSection {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.clock {
+  font-size: 2rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.timerControls {
+  display: flex;
+  gap: 8px;
+  margin-block-start: 10px;
+}
+
+.timerControls > :first-child,
+.timerControls > :nth-child(2) {
+  flex: 1;
+}
+
+/* Space at the end of the page while the timer bar is visible */
+.lessonPage:has(.timerBar) {
+  padding-block-end: 150px;
+}
+
+@media (min-width: 900px) {
+  .timerBar {
+    /* Centered over the content column (excluding the 200px sidebar) */
+    inset-block-end: 16px;
+    inset-inline-start: 216px;
+    inset-inline-end: 16px;
+    inline-size: min(640px, calc(100vw - 232px));
+    margin-inline: auto;
+  }
+
+  .lessonPage:has(.timerBar) {
+    padding-block-end: 140px;
+  }
+}
+
+/* ===== Checklist ===== */
+
+.checklist {
+  list-style: none;
+  margin: 0 0 8px;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.checkItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--surface-2);
+  cursor: pointer;
+}
+
+.checkItem input {
+  inline-size: 22px;
+  block-size: 22px;
+  margin: 3px 0 0;
+  accent-color: var(--accent);
+  flex-shrink: 0;
+}
+
+.checkItem[data-checked] {
+  outline: 1px solid color-mix(in srgb, var(--success) 60%, transparent);
+}
+
+.doneBox {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--success) 14%, transparent);
+  color: var(--success);
+}
+
+.doneBox > div {
+  flex: 1;
+}
+
+/* ===== Report form ===== */
+
+.form {
+  display: grid;
+  gap: 12px;
+  margin-block-start: 12px;
+}
+
+.field {
+  display: grid;
+  gap: 4px;
+}
+
+.fieldLabel {
+  font-weight: 600;
+}
+
+.textarea {
+  inline-size: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  font-size: 16px; /* prevents zoom on iOS */
+  resize: vertical;
+}
+
+.textarea:focus {
+  border-color: var(--accent);
+  outline: none;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* ===== History ===== */
+
+.history {
+  display: grid;
+  gap: 8px;
+}
+
+.historyItem {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+
+.historyItem summary {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.answers {
+  margin: 10px 0;
+  display: grid;
+  gap: 8px;
+}
+
+.answers dt {
+  color: var(--muted);
+  font-size: 0.9em;
+}
+
+.answers dd {
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+/* ===== Fretboard inside a lesson ===== */
+
+.figure {
+  margin: 0;
+}
+
+.figcaption {
+  margin-block-start: 6px;
+  color: var(--muted);
+  font-size: 0.9em;
+}
+
+/* ===== Internal link block ===== */
+
+.linkBlock {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-block-size: 48px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.linkBlock:hover {
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+}
+
+.linkArrow {
+  margin-inline-start: auto;
+}

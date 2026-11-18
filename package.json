@@ -1,0 +1,23 @@
+{
+  "name": "blues-guitar",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.12"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently -n api,web -c blue,yellow \"npm run dev -w @bg/api\" \"npm run dev -w @bg/web\"",
+    "dev:web": "npm run dev -w @bg/web",
+    "dev:api": "npm run dev -w @bg/api",
+    "build": "npm run build -w @bg/web",
+    "typecheck": "npm run typecheck --workspaces --if-present"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.7",
+    "typescript": "^7.0.2"
+  }
+}

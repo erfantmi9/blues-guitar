@@ -1,0 +1,80 @@
+.pageHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space);
+  margin-block: 8px 20px;
+}
+
+.pageTitle {
+  font-size: 1.5rem;
+  margin: 0;
+}
+
+.pageSubtitle {
+  margin: 4px 0 0;
+  color: var(--muted);
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--space);
+  box-shadow: var(--shadow);
+}
+
+.card + .card {
+  margin-block-start: 12px;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-block-size: 44px; /* comfortable touch target on mobile */
+  padding: 8px 16px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, opacity 0.15s;
+}
+
+.button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.primary {
+  background: var(--accent);
+  color: var(--accent-contrast);
+}
+
+.primary:not(:disabled):hover {
+  filter: brightness(1.08);
+}
+
+.secondary {
+  background: var(--surface-2);
+  border-color: var(--border);
+}
+
+.secondary:not(:disabled):hover {
+  border-color: var(--muted);
+}
+
+.ghost {
+  background: transparent;
+  color: var(--muted);
+}
+
+.ghost:not(:disabled):hover {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+.block {
+  inline-size: 100%;
+}

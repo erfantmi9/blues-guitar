@@ -1,0 +1,6 @@
+# Only the static site (apps/web) is deployed; the API and its secrets must not be uploaded
+apps/api
+.env
+.env.*
+**/.env
+**/.env.*
