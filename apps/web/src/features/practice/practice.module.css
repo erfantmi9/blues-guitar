@@ -16,26 +16,30 @@
 }
 
 .beat {
+  position: relative;
   display: grid;
   place-items: center;
-  inline-size: 42px;
-  block-size: 42px;
+  inline-size: 44px;
+  block-size: 44px;
   border-radius: 50%;
-  border: 2px solid var(--border);
+  border: 2px solid var(--border-strong);
+  background: var(--surface-2);
   color: var(--muted);
-  font-weight: 700;
-  transition: background 0.25s, border-color 0.25s, color 0.25s;
+  font-weight: 800;
+  /* Soft fade back after the pulse */
+  transition: background 360ms ease-out, border-color 360ms ease-out, color 360ms ease-out;
 }
 
 .beat[data-first] {
-  border-color: color-mix(in srgb, var(--accent) 55%, var(--border));
+  border-color: var(--accent);
 }
 
 .beat[data-active] {
-  background: var(--blue);
-  border-color: var(--blue);
-  color: var(--surface);
-  animation: flash 0.18s ease-out;
+  background: var(--accent-2);
+  border-color: var(--accent-2);
+  color: var(--accent-2-contrast);
+  transition: none;
+  animation: beatPulse 240ms var(--ease-out);
 }
 
 .beat[data-active][data-first] {
@@ -44,9 +48,35 @@
   color: var(--accent-contrast);
 }
 
-@keyframes flash {
+/* A ring that spreads and fades: a soft pulse, not a sharp blink */
+.beat[data-active]::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  border: 2px solid var(--accent-2);
+  animation: beatRing 520ms ease-out forwards;
+  pointer-events: none;
+}
+
+.beat[data-active][data-first]::after {
+  border-color: var(--accent);
+}
+
+@keyframes beatPulse {
   from {
-    transform: scale(1.25);
+    transform: scale(1.14);
+  }
+}
+
+@keyframes beatRing {
+  from {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1.65);
   }
 }
 
@@ -59,6 +89,8 @@
 
 .bpm {
   font-size: clamp(4rem, 22vw, 6rem);
+  color: var(--accent-text);
+  text-shadow: 0 0 28px var(--accent-glow);
   font-weight: 800;
   line-height: 1;
   font-variant-numeric: tabular-nums;
@@ -160,7 +192,8 @@
   margin: 0;
   padding: 10px 12px;
   border-radius: 10px;
-  background: color-mix(in srgb, #c2410c 12%, var(--surface));
+  background: var(--warning-soft);
+  border-inline-start: 3px solid var(--warning);
   font-size: 0.95em;
 }
 
@@ -170,7 +203,11 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .beat[data-active] {
+  .beat[data-active],
+  .beat[data-active]::after {
     animation: none;
+  }
+  .beat[data-active]::after {
+    display: none;
   }
 }

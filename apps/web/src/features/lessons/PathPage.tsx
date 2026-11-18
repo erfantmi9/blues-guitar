@@ -6,6 +6,7 @@ import { useStorageRevision } from "@/lib/storage";
 import { stages } from "./content";
 import { computeStageStatuses, isLessonDone } from "./progress";
 import { RichText } from "./components/RichText";
+import { PathNeck } from "./components/PathNeck";
 import { StatusBadge } from "./components/StatusBadge";
 import styles from "./lessons.module.css";
 
@@ -17,12 +18,15 @@ export function PathPage() {
     <>
       <PageHeader title="مسیر یادگیری" subtitle="از صفر تا اولین سولوی بلوز، در ۹ مرحله" />
 
+      {/* Visual map (aria-hidden). The list below is the semantic alternative for screen readers and keyboard users. */}
+      <PathNeck stages={stages} statuses={statuses} isLessonDone={isLessonDone} />
+
       <ol className={styles.stageList}>
         {stages.map((stage) => {
           const status = statuses.get(stage.id) ?? "coming-soon";
           const open = status === "in-progress" || status === "done";
           return (
-            <li key={stage.id} className={styles.stage} data-status={status}>
+            <li key={stage.id} id={`stage-${stage.number}`} tabIndex={-1} className={styles.stage} data-status={status}>
               <div className={styles.stageHead}>
                 <span className={styles.stageNum}>{faNum(stage.number)}</span>
                 <div className={styles.stageText}>

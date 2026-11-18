@@ -1,4 +1,4 @@
-import { useMemo, useState, type KeyboardEvent } from "react";
+import { useEffect, useId, useMemo, useRef, useState, type KeyboardEvent } from "react";
 import type { FretPosition, HighlightedNote, NoteName, StringNumber } from "@bg/shared";
 import { playPluck } from "@/lib/audio/pluck";
 import { faNum } from "@/lib/format";
@@ -28,6 +28,8 @@ export type FretboardProps = {
 const STRINGS: StringNumber[] = [1, 2, 3, 4, 5, 6];
 const SINGLE_INLAYS = [3, 5, 7, 9, 15, 17, 19, 21];
 const DOUBLE_INLAYS = [12, 24];
+/** Strings 3 to 6 are wound (bronze), 1 and 2 are plain steel */
+const isWound = (s: number) => s >= 3;
 
 const keyOf = (p: FretPosition) => `${p.string}:${p.fret}`;
 
@@ -40,6 +42,7 @@ export function Fretboard({
   sound = true,
   ariaLabel = "دسته‌ی گیتار",
 }: FretboardProps) {
+  const uid = useId().replace(/:/g, "");
   const g = useMemo(() => createGeometry(frets), [frets]);
   const visible = useMemo(
     () => highlightedNotes.filter((n) => n.fret >= 0 && n.fret <= frets),
@@ -53,11 +56,28 @@ export function Fretboard({
   const [tapped, setTapped] = useState<FretPosition | null>(null);
   /** Ring effect on click; n changes so the animation restarts */
   const [ping, setPing] = useState<{ key: string; n: number } | null>(null);
+  /** String vibration: per-string counter; each change replays the animation */
+  const [plucked, setPlucked] = useState<Record<number, number>>({});
+  const pluckString = (s: number) => setPlucked((p) => ({ ...p, [s]: (p[s] ?? 0) + 1 }));
+
+  // When the "active" note changes (e.g. in TabPlayer), its string vibrates
+  const activeSig = visible
+    .filter((n) => n.variant === "active")
+    .map(keyOf)
+    .join("|");
+  const prevSig = useRef("");
+  useEffect(() => {
+    if (activeSig && activeSig !== prevSig.current) {
+      activeSig.split("|").forEach((k) => pluckString(Number(k.split(":")[0])));
+    }
+    prevSig.current = activeSig;
+  }, [activeSig]);
 
   const activate = (pos: FretPosition) => {
     const key = keyOf(pos);
     const note = noteAt(pos.string, pos.fret);
     if (sound) playPluck(frequencyAt(pos.string, pos.fret));
+    pluckString(pos.string);
     if (highlightedKeys.has(key)) {
       setRevealed((prev) => (prev.has(key) ? prev : new Set(prev).add(key)));
     } else {
@@ -76,19 +96,40 @@ export function Fretboard({
 
   const midY = (g.stringY(3) + g.stringY(4)) / 2;
   const fretCenters = Array.from({ length: frets }, (_, i) => g.noteX(i + 1));
+  const neckTop = g.top - 20;
+  const neckH = g.bottom - g.top + 40;
+
+  // A few faint wood-grain lines (deterministic; same shape on every render)
+  const grain = useMemo(
+    () =>
+      Array.from({ length: 9 }, (_, i) => {
+        const y = neckTop + 6 + (i * (neckH - 12)) / 8;
+        const a = 2 + (i % 3);
+        const w = g.endX - g.nutX;
+        return `M ${g.nutX} ${y} C ${g.nutX + w * 0.3} ${y - a}, ${g.nutX + w * 0.6} ${y + a}, ${g.endX} ${y - a / 2}`;
+      }),
+    [g, neckTop, neckH],
+  );
 
   const renderDot = (
     pos: FretPosition,
-    opts: { text: string | null; color?: string; delayMs: number; variant: "highlight" | "tapped" },
+    opts: {
+      text: string | null;
+      color?: string;
+      delayMs: number;
+      kind: "highlight" | "tapped";
+      variant?: HighlightedNote["variant"];
+    },
   ) => {
     const key = keyOf(pos);
     const note = noteAt(pos.string, pos.fret);
     const posLabel = pos.fret === 0 ? "سیم باز" : `فرت ${faNum(pos.fret)}`;
     return (
       <g
-        key={`${opts.variant}-${key}`}
+        key={`${opts.kind}-${key}`}
         transform={`translate(${g.noteX(pos.fret)} ${g.stringY(pos.string)})`}
         className={styles.dotHit}
+        data-variant={opts.variant}
         role="button"
         tabIndex={0}
         aria-label={`سیم ${faNum(pos.string)}، ${posLabel}، نت ${note}`}
@@ -96,7 +137,9 @@ export function Fretboard({
         onKeyDown={(e) => onKey(e, pos)}
         style={opts.color ? { color: opts.color } : undefined}
       >
-        <g className={`${styles.dot} ${styles[opts.variant]}`} style={{ animationDelay: `${opts.delayMs}ms` }}>
+        {/* Amber glow behind the active note: a gradient circle (cheaper than CSS blur/filter) */}
+        {opts.variant === "active" && <circle r={DOT_R * 2} className={styles.glow} fill={`url(#glow-${uid})`} />}
+        <g className={`${styles.dot} ${styles[opts.kind]}`} style={{ animationDelay: `${opts.delayMs}ms` }}>
           <circle r={DOT_R} />
           {opts.text && (
             <text className={styles.dotText} dominantBaseline="central" textAnchor="middle">
@@ -112,10 +155,33 @@ export function Fretboard({
   return (
     <div className={styles.wrap} dir="ltr">
       <svg viewBox={`0 0 ${g.W} ${g.H}`} className={styles.svg} role="group" aria-label={ariaLabel}>
-        {/* Wood of the neck */}
-        <rect x={g.nutX} y={g.top - 20} width={g.endX - g.nutX} height={g.bottom - g.top + 40} rx={4} className={styles.wood} />
+        <defs>
+          {/* Dark wood: darker toward the edges of the neck */}
+          <linearGradient id={`wood-${uid}`} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" style={{ stopColor: "var(--wood-1)" }} />
+            <stop offset="0.5" style={{ stopColor: "var(--wood-2)" }} />
+            <stop offset="1" style={{ stopColor: "var(--wood-1)" }} />
+          </linearGradient>
+          {/* Nut: bone */}
+          <linearGradient id={`nut-${uid}`} x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" style={{ stopColor: "var(--nut)" }} />
+            <stop offset="1" style={{ stopColor: "var(--fret-wire)" }} />
+          </linearGradient>
+          <radialGradient id={`glow-${uid}`}>
+            <stop offset="0.35" style={{ stopColor: "var(--accent)", stopOpacity: 0.55 }} />
+            <stop offset="1" style={{ stopColor: "var(--accent)", stopOpacity: 0 }} />
+          </radialGradient>
+        </defs>
 
-        {/* Inlay dots */}
+        {/* Wood of the neck + grain */}
+        <rect x={g.nutX} y={neckTop} width={g.endX - g.nutX} height={neckH} rx={5} fill={`url(#wood-${uid})`} />
+        <g className={styles.grain}>
+          {grain.map((d, i) => (
+            <path key={i} d={d} />
+          ))}
+        </g>
+
+        {/* Inlay dots (mother-of-pearl) */}
         {SINGLE_INLAYS.filter((f) => f <= frets).map((f) => (
           <circle key={f} cx={g.noteX(f)} cy={midY} r={10} className={styles.inlay} />
         ))}
@@ -126,24 +192,37 @@ export function Fretboard({
           </g>
         ))}
 
-        {/* Frets and nut */}
+        {/* Fret wires (metal with a thin highlight) and the nut */}
         {g.fretX.slice(1).map((x, i) => (
-          <line key={i} x1={x} x2={x} y1={g.top - 20} y2={g.bottom + 20} className={styles.fretWire} />
+          <g key={i}>
+            <line x1={x} x2={x} y1={neckTop} y2={neckTop + neckH} className={styles.fretWire} />
+            <line x1={x - 1} x2={x - 1} y1={neckTop} y2={neckTop + neckH} className={styles.fretShine} />
+          </g>
         ))}
-        <rect x={g.nutX - 5} y={g.top - 20} width={7} height={g.bottom - g.top + 40} rx={2} className={styles.nut} />
+        <rect x={g.nutX - 6} y={neckTop} width={8} height={neckH} rx={2} fill={`url(#nut-${uid})`} />
 
-        {/* Strings: thicker toward string 6 */}
-        {STRINGS.map((s) => (
-          <line
-            key={s}
-            x1={g.openX - 22}
-            x2={g.endX}
-            y1={g.stringY(s)}
-            y2={g.stringY(s)}
-            className={styles.string}
-            strokeWidth={0.9 + (s - 1) * 0.45}
-          />
-        ))}
+        {/* Strings: plain steel (1-2) / bronze wound (3-6); played string vibrates briefly */}
+        {STRINGS.map((s) => {
+          const y = g.stringY(s);
+          const w = 0.9 + (s - 1) * 0.45;
+          const n = plucked[s] ?? 0;
+          return (
+            <g key={`${s}-${n}`} className={n ? styles.vibrate : undefined}>
+              <line
+                x1={g.openX - 22}
+                x2={g.endX}
+                y1={y}
+                y2={y}
+                className={isWound(s) ? styles.stringWound : styles.stringPlain}
+                strokeWidth={w}
+              />
+              {/* Winding texture of wound strings */}
+              {isWound(s) && (
+                <line x1={g.nutX} x2={g.endX} y1={y} y2={y} className={styles.winding} strokeWidth={w} />
+              )}
+            </g>
+          );
+        })}
 
         {/* String numbers */}
         {STRINGS.map((s) => (
@@ -195,14 +274,14 @@ export function Fretboard({
         {/* Last tapped cell */}
         {tapped &&
           !highlightedKeys.has(keyOf(tapped)) &&
-          renderDot(tapped, { text: noteAt(tapped.string, tapped.fret), delayMs: 0, variant: "tapped" })}
+          renderDot(tapped, { text: noteAt(tapped.string, tapped.fret), delayMs: 0, kind: "tapped" })}
 
         {/* Highlighted dots */}
         {visible.map((n, i) => {
           const key = keyOf(n);
           const name = noteAt(n.string, n.fret);
           const text = revealed.has(key) ? name : (n.label ?? (showNoteNames ? name : null));
-          return renderDot(n, { text, color: n.color, delayMs: i * 60, variant: "highlight" });
+          return renderDot(n, { text, color: n.color, delayMs: i * 60, kind: "highlight", variant: n.variant });
         })}
       </svg>
     </div>

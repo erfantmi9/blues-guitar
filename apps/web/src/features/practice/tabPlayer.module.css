@@ -31,9 +31,18 @@
   cursor: pointer;
 }
 
+.listItem {
+  transition: border-color var(--dur-fast), background var(--dur-fast);
+}
+
+.listItem:hover {
+  border-color: var(--border-strong);
+}
+
 .listItem[aria-current="true"] {
   border-color: var(--accent);
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 30%, transparent);
+  background: linear-gradient(var(--accent-soft), var(--accent-soft)), var(--surface);
+  box-shadow: 0 0 0 1px var(--accent);
 }
 
 .listTitle {
@@ -46,8 +55,8 @@
 }
 
 .devErrors {
-  border-color: #dc2626;
-  background: color-mix(in srgb, #dc2626 12%, var(--surface));
+  border-color: var(--danger);
+  background: var(--danger-soft);
   font-size: 0.9em;
 }
 
@@ -83,6 +92,7 @@
   border-radius: var(--radius-sm);
   background: var(--surface-2);
   border: 1px solid var(--border);
+  box-shadow: inset 0 2px 8px var(--dot-edge);
 }
 
 .tabSvg {
@@ -136,8 +146,15 @@
 
 .note text {
   fill: var(--text);
+  font-family: var(--font-mono);
   font-size: 17px;
   font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.note rect {
+  stroke: var(--border-strong);
+  stroke-width: 1;
 }
 
 .note[data-state="past"] .noteInner {
@@ -145,11 +162,21 @@
 }
 
 .note[data-state="active"] .noteInner {
-  transform: scale(1.3);
+  transform: scale(1.2);
+  animation: notePulse 260ms var(--ease-spring);
 }
 
 .note[data-state="active"] rect {
   fill: var(--accent);
+  stroke: var(--accent-glow);
+  stroke-width: 6;
+  paint-order: stroke;
+}
+
+@keyframes notePulse {
+  from {
+    transform: scale(1);
+  }
 }
 
 .note[data-state="active"] text {
@@ -167,7 +194,7 @@
 }
 
 .playhead line {
-  stroke: var(--blue);
+  stroke: var(--accent-2);
   stroke-width: 3;
   stroke-linecap: round;
 }
@@ -179,7 +206,7 @@
   display: grid;
   place-items: center;
   border-radius: var(--radius-sm);
-  background: color-mix(in srgb, var(--bg) 70%, transparent);
+  background: var(--overlay);
   pointer-events: none;
 }
 
@@ -187,7 +214,8 @@
   font-size: 4.5rem;
   font-weight: 800;
   line-height: 1;
-  color: var(--accent);
+  color: var(--accent-text);
+  text-shadow: 0 0 30px var(--accent-glow);
   animation: count 0.35s ease-out;
 }
 
@@ -212,7 +240,8 @@
   margin: 0;
   padding: 10px 12px;
   border-radius: 10px;
-  background: color-mix(in srgb, #c2410c 12%, var(--surface));
+  background: var(--warning-soft);
+  border-inline-start: 3px solid var(--warning);
 }
 
 .startBtn {
@@ -295,6 +324,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .noteInner,
+  .note[data-state="active"] .noteInner,
   .countIn span {
     transition: none;
     animation: none;
@@ -316,7 +346,7 @@
 .startBar .startBtn {
   min-block-size: 60px;
   font-size: 1.15rem;
-  box-shadow: 0 4px 14px rgb(0 0 0 / 0.18);
+  box-shadow: var(--shadow-2);
 }
 
 .noteName {

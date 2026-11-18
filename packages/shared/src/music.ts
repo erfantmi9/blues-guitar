@@ -15,8 +15,14 @@ export type FretPosition = {
 export type HighlightedNote = FretPosition & {
   /** Text inside the dot (e.g. finger number); if unset and note names are on, the note name is shown */
   label?: string;
-  /** Any CSS color; default is the theme accent color */
+  /** Any CSS color; default is the theme accent color. If set, overrides variant's color */
   color?: string;
+  /**
+   * Display style only (no effect on logic):
+   * active = the note being played now (amber glow), root = root note (red),
+   * preview = next note (faded), faded = previous note (very faded). Default: a normal amber dot.
+   */
+  variant?: "active" | "root" | "preview" | "faded";
 };
 
 export type Pitch = {

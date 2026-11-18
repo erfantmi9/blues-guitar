@@ -1,9 +1,10 @@
-import { Link, NavLink, Outlet, useNavigation } from "react-router";
+import { Link, NavLink, Outlet, useLocation, useNavigation } from "react-router";
 import { navItems } from "./navItems";
 import styles from "./Layout.module.css";
 
 export function Layout() {
   const navigation = useNavigation();
+  const location = useLocation();
   const primary = navItems.filter((i) => i.primary);
   const secondary = navItems.filter((i) => !i.primary);
 
@@ -38,7 +39,10 @@ export function Layout() {
       </nav>
 
       <main className={styles.main} aria-busy={navigation.state === "loading"}>
-        <Outlet />
+        {/* key = path: page change → short fade (search params like ?exercise don't trigger it) */}
+        <div key={location.pathname} className={styles.page}>
+          <Outlet />
+        </div>
       </main>
     </div>
   );

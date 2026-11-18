@@ -112,8 +112,9 @@ export function TabStaff({ exercise, view, subdivisions, reducedMotion }: Props)
             >
               <g className={styles.noteInner}>
                 <rect x={-15} y={-13} width={30} height={26} rx={7} />
+                {/* Fret number in Latin digits, as in standard tab: the Persian zero (۰) looks like a dot */}
                 <text dominantBaseline="central" textAnchor="middle">
-                  {faNum(n.fret)}
+                  {n.fret}
                 </text>
               </g>
             </g>

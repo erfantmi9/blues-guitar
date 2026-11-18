@@ -1,42 +1,180 @@
-/* Design tokens: change colors and sizes only here */
+/* =====================================================================
+   Design tokens: "warm night studio"
+   Dark is the base; light ("cream paper") follows the OS setting.
+   data-theme="light|dark" on <html> forces a theme (for testing / a future toggle).
+   Contrast ratios (WCAG) are noted next to text colors.
+   ===================================================================== */
+
 :root {
+  /* --- Type --- */
   --font: "Vazirmatn Variable", system-ui, sans-serif;
+  /* System monospace (no download); Persian digits fall back to Vazirmatn */
+  --font-mono: ui-monospace, "SF Mono", "Cascadia Mono", Consolas, "Roboto Mono", "Liberation Mono", monospace,
+    "Vazirmatn Variable";
 
-  --bg: #f7f3ee;
-  --surface: #ffffff;
-  --surface-2: #efe8df;
-  --text: #241d17;
-  --muted: #74685c;
-  --border: #e2d8cc;
-  --accent: #b8661a;       /* sunburst amber */
-  --accent-contrast: #ffffff;
-  --blue: #2f5f8a;         /* blue note */
-  --success: #2e7d4f;
+  --fs-xs: 0.78rem;
+  --fs-sm: 0.875rem;
+  --fs-base: 1rem;
+  --fs-md: 1.125rem;
+  --fs-lg: 1.3rem;
+  --fs-xl: 1.65rem;
+  --fs-2xl: 2.1rem;
+  --lh-body: 1.85; /* Persian needs room for dots and joins */
+  --lh-tight: 1.35;
 
-  --radius: 14px;
+  /* --- Spacing --- */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space: var(--space-4); /* backward compatibility */
+
+  /* --- Radius --- */
   --radius-sm: 8px;
-  --space: 16px;
-  --nav-h: 64px;
-  --shadow: 0 1px 2px rgb(0 0 0 / 0.06), 0 4px 16px rgb(0 0 0 / 0.04);
+  --radius: 14px;
+  --radius-lg: 20px;
+  --radius-pill: 999px;
 
-  color-scheme: light dark;
+  /* --- Sizes --- */
+  --nav-h: 64px;
+  --touch: 48px; /* minimum touch target */
+
+  /* --- Motion (zeroed for reduced-motion) --- */
+  --dur-fast: 120ms;
+  --dur: 200ms;
+  --dur-slow: 420ms;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* --- Fretboard: wood and metal (the same in both themes; it's a real object) --- */
+  --wood-1: #2d1c12;
+  --wood-2: #3a2517;
+  --wood-grain: #4a3020;
+  --wood-grain-line: rgb(0 0 0 / 0.07);
+  --fret-wire: #b9b1a3;
+  --nut: #e9dfca;
+  --inlay: #e6dcc6;
+  --string-plain: #dcd5ca; /* plain steel */
+  --string-wound: #c2a57e; /* bronze wound */
+  --dot-edge: rgb(0 0 0 / 0.35);
+
+  /* --- Dark colors (base) --- */
+  color-scheme: dark;
+  --bg: #14110f;
+  --bg-glow: rgb(232 135 43 / 0.09); /* warm lamp in the corner of the room */
+  --surface: #1e1915;
+  --surface-2: #28211b;
+  --surface-3: #332a22;
+  --border: #3a3029;
+  --border-strong: #574739;
+  --text: #ede3d3; /* 13.7:1 on surface */
+  --muted: #a8998a; /* 6.3:1 on surface */
+
+  --accent: #e8872b; /* amber: fill */
+  --accent-text: #e8872b; /* 6.6:1 on surface */
+  --accent-contrast: #1a120a; /* text on accent: 7.0:1 */
+  --accent-soft: rgb(232 135 43 / 0.16);
+  --accent-edge: transparent;
+  --accent-hi: #f0a04f; /* top of gradient (lamp highlight) */
+  --accent-lo: #c96d1b; /* bottom of gradient */
+  --accent-glow: rgb(232 135 43 / 0.3);
+  --accent-2-glow: rgb(111 168 160 / 0.35);
+  --highlight-inset: rgb(255 255 255 / 0.25);
+  --nav-shadow: 0 -6px 20px rgb(0 0 0 / 0.18);
+
+  --accent-2: #6fa8a0; /* teal: secondary beats, playhead, notes */
+  --accent-2-text: #6fa8a0; /* 6.5:1 */
+  --accent-2-contrast: #0f1a18;
+  --accent-2-soft: rgb(111 168 160 / 0.16);
+
+  --root: #d94f3d; /* root note */
+  --root-text: #e8705f; /* 5.7:1 */
+  --root-contrast: #1a0d0a; /* 4.6:1 */
+
+  --success: var(--accent-2);
+  --success-text: var(--accent-2-text);
+  --success-soft: var(--accent-2-soft);
+  --warning: #e0703a;
+  --warning-text: #f08a55;
+  --warning-soft: rgb(224 112 58 / 0.13);
+  --danger: #e2533f;
+  --danger-soft: rgb(226 83 63 / 0.14);
+  --blue: var(--accent-2); /* old name, kept for compatibility */
+
+  --shadow-1: 0 1px 0 rgb(255 255 255 / 0.03) inset, 0 1px 2px rgb(0 0 0 / 0.3);
+  --shadow-2: 0 1px 0 rgb(255 255 255 / 0.04) inset, 0 8px 28px rgb(0 0 0 / 0.38);
+  --shadow: var(--shadow-1);
+  --glow: 0 0 0 3px rgb(232 135 43 / 0.22), 0 0 22px rgb(232 135 43 / 0.25);
+  --header-bg: rgb(20 17 15 / 0.86);
+  --overlay: rgb(20 17 15 / 0.72);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #15120f;
-    --surface: #1f1a16;
-    --surface-2: #2a241e;
-    --text: #f1e9df;
-    --muted: #a6998b;
-    --border: #3a322a;
-    --accent: #e0912f;
-    --accent-contrast: #1a1613;
-    --blue: #6aa6dc;
-    --success: #5cc287;
-    --shadow: none;
+/* Light theme: cream paper */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    color-scheme: light;
+    --bg: #f3eadb;
+    --bg-glow: rgb(232 135 43 / 0.1);
+    --surface: #fbf6ec;
+    --surface-2: #ebdfcb;
+    --surface-3: #e2d3bb;
+    --border: #dccbb1;
+    --border-strong: #b9a68b;
+    --text: #2b2119; /* 14.6:1 */
+    --muted: #6a5a49; /* 5.0:1 on surface-2 */
+    --accent-text: #9a4e0c; /* 5.6:1 */
+    --accent-soft: rgb(232 135 43 / 0.18);
+    --accent-edge: #c56d1c;
+    --accent-2-text: #2f6b63; /* 5.7:1 */
+    --accent-2-soft: rgb(111 168 160 / 0.22);
+    --root-text: #a8321f; /* 6.2:1 */
+    --warning-text: #a8441a;
+    --warning-soft: rgb(224 112 58 / 0.14);
+    --shadow-1: 0 1px 0 rgb(255 255 255 / 0.6) inset, 0 1px 2px rgb(60 40 20 / 0.08);
+    --shadow-2: 0 1px 0 rgb(255 255 255 / 0.6) inset, 0 8px 24px rgb(60 40 20 / 0.12);
+    --glow: 0 0 0 3px rgb(232 135 43 / 0.28), 0 0 18px rgb(232 135 43 / 0.22);
+    --header-bg: rgb(243 234 219 / 0.88);
+    --overlay: rgb(243 234 219 / 0.78);
   }
 }
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f3eadb;
+  --bg-glow: rgb(232 135 43 / 0.1);
+  --surface: #fbf6ec;
+  --surface-2: #ebdfcb;
+  --surface-3: #e2d3bb;
+  --border: #dccbb1;
+  --border-strong: #b9a68b;
+  --text: #2b2119;
+  --muted: #6a5a49;
+  --accent-text: #9a4e0c;
+  --accent-soft: rgb(232 135 43 / 0.18);
+  --accent-edge: #c56d1c;
+  --accent-2-text: #2f6b63;
+  --accent-2-soft: rgb(111 168 160 / 0.22);
+  --root-text: #a8321f;
+  --warning-text: #a8441a;
+  --warning-soft: rgb(224 112 58 / 0.14);
+  --shadow-1: 0 1px 0 rgb(255 255 255 / 0.6) inset, 0 1px 2px rgb(60 40 20 / 0.08);
+  --shadow-2: 0 1px 0 rgb(255 255 255 / 0.6) inset, 0 8px 24px rgb(60 40 20 / 0.12);
+  --glow: 0 0 0 3px rgb(232 135 43 / 0.28), 0 0 18px rgb(232 135 43 / 0.22);
+  --header-bg: rgb(243 234 219 / 0.88);
+  --overlay: rgb(243 234 219 / 0.78);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast: 0ms;
+    --dur: 0ms;
+    --dur-slow: 0ms;
+  }
+}
+
+/* ===================================================================== */
 
 *,
 *::before,
@@ -46,35 +184,66 @@
 
 html {
   -webkit-text-size-adjust: 100%;
+  background: var(--bg);
 }
 
 body {
   margin: 0;
+  min-height: 100dvh;
   font-family: var(--font);
-  background: var(--bg);
+  font-size: var(--fs-base);
+  line-height: var(--lh-body);
   color: var(--text);
-  line-height: 1.8;
-  font-size: 16px;
   -webkit-font-smoothing: antialiased;
+  /* Material: a soft lamp glow in the top corner plus very faint grain. Light, no image, not fixed (cheap on phones). */
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(1200px 520px at 100% -10%, var(--bg-glow), transparent 70%),
+    radial-gradient(900px 480px at -10% 110%, var(--bg-glow), transparent 70%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.035'/%3E%3C/svg%3E");
 }
 
-h1, h2, h3 {
-  line-height: 1.4;
+h1,
+h2,
+h3,
+h4 {
+  line-height: var(--lh-tight);
   margin: 0 0 0.5em;
+  font-weight: 750;
+  letter-spacing: -0.005em;
+}
+
+p {
+  margin: 0 0 0.75em;
 }
 
 a {
   color: inherit;
 }
 
-button {
+button,
+input,
+textarea,
+select {
   font: inherit;
   color: inherit;
+}
+
+code,
+kbd,
+samp {
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+}
+
+::selection {
+  background: var(--accent-soft);
 }
 
 :focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
+  border-radius: 4px;
 }
 
 /* Musical elements (fretboard, tab, notes) are always left-to-right */

@@ -1,0 +1,179 @@
+/* Path map: 9 stages = 9 frets on a horizontal neck. Neck colors from global tokens (wood, strings). */
+
+.scroll {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  margin-inline: calc(-1 * var(--space-4));
+  padding: var(--space-2) var(--space-4) var(--space-3);
+  scrollbar-width: thin;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.neck {
+  --neck-h: 132px;
+  position: relative;
+  display: flex;
+  min-inline-size: 820px; /* scrolls on phones; fits on desktop */
+  padding-inline-start: 14px; /* room for the nut */
+}
+
+/* Wood + grain: gradient only (no image) */
+.wood {
+  position: absolute;
+  inset-inline: 0;
+  inset-block-start: 0;
+  block-size: var(--neck-h);
+  border-radius: 6px;
+  background:
+    repeating-linear-gradient(178deg, transparent 0 9px, var(--wood-grain-line) 9px 10px, transparent 10px 23px),
+    linear-gradient(180deg, var(--wood-1), var(--wood-2) 50%, var(--wood-1));
+  box-shadow: var(--shadow-2);
+}
+
+.string {
+  position: absolute;
+  inset-inline: 0;
+  background: linear-gradient(180deg, var(--string-plain), var(--string-wound));
+  opacity: 0.85;
+}
+
+.nut {
+  position: absolute;
+  inset-inline-start: 0;
+  inset-block-start: 0;
+  inline-size: 12px;
+  block-size: var(--neck-h);
+  border-radius: 4px 0 0 4px;
+  background: linear-gradient(90deg, var(--nut), var(--fret-wire));
+}
+
+/* Each fret: the space between two fret wires + the title below the neck */
+.fret {
+  position: relative;
+  flex: 1 1 0;
+  min-inline-size: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  color: var(--text);
+  cursor: pointer;
+}
+
+/* Fret wire on the end side of each space */
+.fret::after {
+  content: "";
+  position: absolute;
+  inset-inline-end: 0;
+  inset-block-start: 0;
+  inline-size: 3px;
+  block-size: var(--neck-h);
+  background: linear-gradient(90deg, var(--nut), var(--fret-wire));
+  opacity: 0.9;
+}
+
+.marker {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  margin-block-start: calc(var(--neck-h) / 2 - 22px);
+  inline-size: 44px;
+  block-size: 44px;
+  border-radius: 50%;
+  font-weight: 800;
+  font-size: var(--fs-md);
+  background: var(--inlay);
+  color: var(--wood-1);
+  opacity: 0.4;
+  transition: transform var(--dur) var(--ease-out);
+}
+
+.label {
+  margin-block-start: calc(var(--neck-h) / 2 - 22px + var(--space-3));
+  padding-inline: 6px;
+  font-size: var(--fs-xs);
+  line-height: 1.5;
+  text-align: center;
+  color: var(--muted);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  direction: rtl;
+}
+
+.fret:hover .marker {
+  transform: scale(1.08);
+}
+
+/* --- Statuses --- */
+
+/* Done: lit (amber, like an amp lamp) */
+.fret[data-status="done"] .marker {
+  opacity: 1;
+  background: var(--accent);
+  color: var(--accent-contrast);
+  box-shadow: 0 0 0 3px var(--accent-glow), 0 0 20px var(--accent-glow);
+}
+
+.fret[data-status="done"] .label {
+  color: var(--text);
+}
+
+/* In progress: bright with a gentle pulse around it */
+.fret[data-status="in-progress"] .marker {
+  opacity: 1;
+  background: var(--surface);
+  color: var(--accent-text);
+  border: 3px solid var(--accent);
+}
+
+.fret[data-status="in-progress"] .marker::after {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  border: 2px solid var(--accent);
+  animation: breathe 2.4s ease-out infinite;
+}
+
+.fret[data-status="in-progress"] .label {
+  color: var(--accent-text);
+  font-weight: 700;
+}
+
+/* Locked / coming soon: dim */
+.fret[data-status="locked"] .marker,
+.fret[data-status="coming-soon"] .marker {
+  opacity: 0.38;
+}
+
+@keyframes breathe {
+  0% {
+    opacity: 0.8;
+    transform: scale(1);
+  }
+  70%,
+  100% {
+    opacity: 0;
+    transform: scale(1.55);
+  }
+}
+
+@media (min-width: 900px) {
+  .scroll {
+    margin-inline: 0;
+    padding-inline: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fret[data-status="in-progress"] .marker::after {
+    animation: none;
+    opacity: 0.5;
+  }
+  .fret:hover .marker {
+    transform: none;
+  }
+}

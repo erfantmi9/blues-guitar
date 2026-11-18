@@ -1,3 +1,4 @@
+import { useState } from "react";
 import type { Lesson, LessonProgress } from "@bg/shared";
 import { CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
@@ -20,6 +21,8 @@ export function CompletionChecklist({ lesson, progress, onToggle, onComplete, on
   const checkedCount = criteria.filter((c) => progress.checkedCriteria.includes(c.id)).length;
   const ready = canComplete(lesson, progress);
   const done = progress.completedAt !== null;
+  /** Only right after clicking "complete" (not when the page reopens) is there a small celebration */
+  const [celebrate, setCelebrate] = useState(false);
 
   return (
     <Card>
@@ -47,19 +50,35 @@ export function CompletionChecklist({ lesson, progress, onToggle, onComplete, on
       )}
 
       {done ? (
-        <div className={styles.doneBox}>
-          <CheckCircle2 size={22} aria-hidden />
+        <div className={styles.doneBox} data-celebrate={celebrate || undefined}>
+          <span className={styles.doneMark}>
+            <CheckCircle2 size={26} aria-hidden />
+          </span>
           <div>
             <strong>این درس تمام شده</strong>
             <div className={styles.muted}>{formatDateTime(progress.completedAt!)}</div>
           </div>
-          <Button variant="ghost" onClick={onUncomplete}>
+          <Button
+            variant="ghost"
+            onClick={() => {
+              setCelebrate(false);
+              onUncomplete();
+            }}
+          >
             برگرداندن
           </Button>
         </div>
       ) : (
         <>
-          <Button variant="primary" block disabled={!ready} onClick={onComplete}>
+          <Button
+            variant="primary"
+            block
+            disabled={!ready}
+            onClick={() => {
+              setCelebrate(true);
+              onComplete();
+            }}
+          >
             علامت‌گذاری درس به‌عنوان تمام‌شده
           </Button>
           <p className={styles.hint}>

@@ -30,26 +30,24 @@ type Props = {
 };
 
 const STEPS = [-5, -1, +1, +5];
-const COLOR_NEXT = "color-mix(in srgb, var(--accent) 38%, var(--surface))";
-const COLOR_PREV = "color-mix(in srgb, var(--muted) 40%, var(--surface))";
 
 /** Fretboard dots: current note (bright, with finger number), next note (preview), previous note (faded) */
 function fretboardNotes(exercise: TabExercise, view: PlayerView, loop: boolean): HighlightedNote[] {
   const label = (n: TabNote) => (n.finger ? faNum(n.finger) : undefined);
   const out = new Map<string, HighlightedNote>();
-  const add = (n: TabNote | null | undefined, color?: string) => {
+  const add = (n: TabNote | null | undefined, variant: HighlightedNote["variant"]) => {
     if (!n) return;
     const k = `${n.string}:${n.fret}`;
-    if (!out.has(k)) out.set(k, { string: n.string, fret: n.fret, label: label(n), color }); // priority: added first
+    if (!out.has(k)) out.set(k, { string: n.string, fret: n.fret, label: label(n), variant }); // priority: added first
   };
 
   if (view.phase === "play") {
     const { current, previous, next } = neighborsAt(exercise.notes, view.beatPos, loop);
-    current.forEach((n) => add(n));
-    add(next, COLOR_NEXT);
-    add(previous, COLOR_PREV);
+    current.forEach((n) => add(n, "active"));
+    add(next, "preview");
+    add(previous, "faded");
   } else if (view.phase !== "finished") {
-    add(exercise.notes[0], COLOR_NEXT); // before start: preview of the first note
+    add(exercise.notes[0], "preview"); // before start: preview of the first note
   }
   return [...out.values()];
 }

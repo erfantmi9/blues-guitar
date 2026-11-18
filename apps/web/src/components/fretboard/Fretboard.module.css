@@ -1,11 +1,6 @@
-/* Neck colors: a rosewood-like neck that reads well in both themes */
-.wrap {
-  --fb-wood: #3b2719;
-  --fb-fret: #b8b1a5;
-  --fb-nut: #ece4d2;
-  --fb-string: #d8d0c2;
-  --fb-inlay: #e9e0cc;
+/* Wood and metal colors come from tokens in global.css (--wood-*, --string-*, …) */
 
+.wrap {
   direction: ltr;
   max-inline-size: 100%;
   overflow-x: auto;
@@ -25,33 +20,70 @@
   font-family: var(--font);
 }
 
-.wood {
-  fill: var(--fb-wood);
-}
-
-.inlay {
-  fill: var(--fb-inlay);
+.grain path {
+  fill: none;
+  stroke: var(--wood-grain);
+  stroke-width: 1.4;
   opacity: 0.55;
 }
 
+.inlay {
+  fill: var(--inlay);
+  opacity: 0.5;
+}
+
 .fretWire {
-  stroke: var(--fb-fret);
-  stroke-width: 3;
+  stroke: var(--fret-wire);
+  stroke-width: 3.2;
 }
 
-.nut {
-  fill: var(--fb-nut);
+.fretShine {
+  stroke: var(--nut);
+  stroke-width: 0.8;
+  opacity: 0.6;
 }
 
-.string {
-  stroke: var(--fb-string);
+.stringPlain {
+  stroke: var(--string-plain);
   stroke-linecap: round;
+}
+
+.stringWound {
+  stroke: var(--string-wound);
+  stroke-linecap: round;
+}
+
+/* Winding texture: very fine dashes */
+.winding {
+  stroke: var(--wood-1);
+  stroke-dasharray: 0.8 1.6;
+  opacity: 0.45;
+}
+
+/* String vibration: short, damped; transform only */
+.vibrate {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: vibrate 560ms linear;
+}
+
+@keyframes vibrate {
+  0% { transform: translateY(0); }
+  8% { transform: translateY(1.8px); }
+  16% { transform: translateY(-1.6px); }
+  26% { transform: translateY(1.2px); }
+  36% { transform: translateY(-0.9px); }
+  48% { transform: translateY(0.6px); }
+  62% { transform: translateY(-0.35px); }
+  78% { transform: translateY(0.15px); }
+  100% { transform: translateY(0); }
 }
 
 .stringLabel,
 .fretNum {
   fill: var(--muted);
   font-size: 16px;
+  font-variant-numeric: tabular-nums;
 }
 
 .fretNumMarked {
@@ -65,7 +97,7 @@
 }
 
 .cell:hover {
-  fill: rgb(255 255 255 / 0.06);
+  fill: var(--accent-soft);
 }
 
 /* ===== Dots ===== */
@@ -76,21 +108,61 @@
   outline: none;
 }
 
+.dotHit[data-variant="root"] {
+  color: var(--root);
+}
+
 .dot {
   transform-box: fill-box;
   transform-origin: center;
-  animation: pop 0.42s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  animation: pop 0.42s var(--ease-spring) both;
 }
 
 .dot circle {
   fill: currentColor;
-  stroke: rgb(0 0 0 / 0.35);
+  stroke: var(--dot-edge);
   stroke-width: 1.5;
-  transition: transform 0.15s;
+  transition: opacity var(--dur);
 }
 
 .highlight .dotText {
   fill: var(--accent-contrast);
+}
+
+.dotHit[data-variant="root"] .dotText {
+  fill: var(--root-contrast);
+}
+
+/* Next note: a faded preview */
+.dotHit[data-variant="preview"] .dot {
+  opacity: 0.5;
+}
+
+/* Previous note: even more faded */
+.dotHit[data-variant="faded"] .dot {
+  opacity: 0.28;
+}
+
+.dotHit[data-variant="faded"] .dot circle {
+  fill: var(--muted);
+}
+
+/* Active note: slightly larger, with a soft pulsing glow behind it */
+.dotHit[data-variant="active"] .dot {
+  animation: popActive 0.36s var(--ease-spring) both;
+}
+
+.glow {
+  transform-box: fill-box;
+  transform-origin: center;
+  pointer-events: none;
+  animation: glow 1.6s ease-in-out infinite;
+}
+
+@keyframes glow {
+  0%,
+  100% { opacity: 0.75; transform: scale(0.92); }
+  50% { opacity: 1; transform: scale(1.05); }
 }
 
 .tapped circle {
@@ -105,12 +177,12 @@
 
 .dotText {
   font-size: 18px;
-  font-weight: 700;
+  font-weight: 800;
   pointer-events: none;
 }
 
 .dotHit:hover .dot circle {
-  stroke: var(--fb-nut);
+  stroke: var(--nut);
   stroke-width: 2.5;
 }
 
@@ -136,6 +208,15 @@
   }
 }
 
+@keyframes popActive {
+  from {
+    transform: scale(0.85);
+  }
+  to {
+    transform: scale(1.08);
+  }
+}
+
 @keyframes ping {
   from {
     opacity: 0.9;
@@ -149,7 +230,13 @@
 
 @media (prefers-reduced-motion: reduce) {
   .dot,
-  .ping {
+  .ping,
+  .vibrate,
+  .glow,
+  .dotHit[data-variant="active"] .dot {
     animation: none;
+  }
+  .dotHit[data-variant="active"] .dot {
+    transform: scale(1.08);
   }
 }

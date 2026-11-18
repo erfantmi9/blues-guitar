@@ -18,9 +18,12 @@
 
 /* English text inside Persian sentences */
 .latin {
+  font-family: var(--font-mono);
+  font-size: 0.92em;
   font-weight: 600;
   padding-inline: 0.15em;
-  white-space: nowrap;
+  /* Long phrases (e.g. the mnemonic sentence) must wrap, or they widen the page on a phone */
+  overflow-wrap: anywhere;
 }
 
 /* ===== Path page ===== */
@@ -82,7 +85,14 @@
 
 .stage[data-status="done"] .stageNum {
   background: var(--success);
-  color: var(--surface);
+  color: var(--accent-2-contrast);
+}
+
+/* Target of a click on the neck: briefly highlighted */
+.stage:target,
+.stage:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 .stageTitle {
@@ -143,13 +153,13 @@
 }
 
 .badge-in-progress {
-  background: color-mix(in srgb, var(--accent) 18%, transparent);
-  color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent-text);
 }
 
 .badge-done {
-  background: color-mix(in srgb, var(--success) 18%, transparent);
-  color: var(--success);
+  background: var(--success-soft);
+  color: var(--success-text);
 }
 
 /* ===== Lesson page ===== */
@@ -183,7 +193,7 @@
 }
 
 .goalIcon {
-  color: var(--accent);
+  color: var(--accent-text);
   flex-shrink: 0;
   margin-block-start: 4px;
 }
@@ -205,7 +215,7 @@
 
 .section[data-active] {
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent);
+  box-shadow: var(--glow);
 }
 
 .sectionHeader {
@@ -276,7 +286,7 @@ ol.list {
 }
 
 .itemLabel {
-  color: var(--accent);
+  color: var(--accent-text);
 }
 
 .tableWrap {
@@ -329,27 +339,29 @@ ol.list {
 
 .tip {
   border-color: var(--accent);
+  background: var(--accent-soft);
 }
 
 .tip .calloutIcon {
-  color: var(--accent);
+  color: var(--accent-text);
 }
 
 .warning {
-  border-color: #c2410c;
-  background: color-mix(in srgb, #c2410c 10%, var(--surface));
+  border-color: var(--warning);
+  background: var(--warning-soft);
 }
 
 .warning .calloutIcon {
-  color: #ea580c;
+  color: var(--warning-text);
 }
 
 .note {
-  border-color: var(--blue);
+  border-color: var(--accent-2);
+  background: var(--accent-2-soft);
 }
 
 .note .calloutIcon {
-  color: var(--blue);
+  color: var(--accent-2-text);
 }
 
 /* ===== Timer ===== */
@@ -379,7 +391,7 @@ ol.list {
   background: var(--surface);
   border: 1px solid var(--accent);
   border-radius: var(--radius);
-  box-shadow: 0 8px 30px rgb(0 0 0 / 0.25);
+  box-shadow: var(--shadow-2);
 }
 
 .timerProgress {
@@ -387,7 +399,8 @@ ol.list {
   inset-block-start: 0;
   inset-inline: 0;
   block-size: 4px;
-  background: var(--accent);
+  background: linear-gradient(90deg, var(--accent-lo), var(--accent-hi));
+  box-shadow: 0 0 10px var(--accent-glow);
   transform-origin: right; /* RTL: grows from right to left */
   transition: transform 0.25s linear;
 }
@@ -411,6 +424,8 @@ ol.list {
 }
 
 .clock {
+  font-family: var(--font-mono);
+  color: var(--accent-text);
   font-size: 2rem;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
@@ -462,10 +477,17 @@ ol.list {
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  padding: 10px 12px;
-  border-radius: 10px;
+  min-block-size: var(--touch);
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
   background: var(--surface-2);
   cursor: pointer;
+  transition: border-color var(--dur), background var(--dur);
+}
+
+.checkItem:hover {
+  border-color: var(--border-strong);
 }
 
 .checkItem input {
@@ -477,17 +499,87 @@ ol.list {
 }
 
 .checkItem[data-checked] {
-  outline: 1px solid color-mix(in srgb, var(--success) 60%, transparent);
+  border-color: var(--success);
+  background: var(--success-soft);
 }
 
 .doneBox {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 10px;
   padding: 12px;
-  border-radius: 10px;
-  background: color-mix(in srgb, var(--success) 14%, transparent);
-  color: var(--success);
+  border-radius: 12px;
+  background: var(--success-soft);
+  border: 1px solid var(--success);
+  color: var(--success-text);
+}
+
+/* Completion moment: icon pops, the check is drawn, a soft amber ring spreads (only right after the click) */
+.doneMark {
+  position: relative;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.doneBox[data-celebrate] {
+  animation: doneIn 420ms var(--ease-out) both;
+}
+
+.doneBox[data-celebrate] .doneMark svg {
+  animation: iconPop 560ms var(--ease-spring) both;
+}
+
+.doneBox[data-celebrate] .doneMark svg path {
+  stroke-dasharray: 24;
+  stroke-dashoffset: 24;
+  animation: drawCheck 380ms 220ms var(--ease-out) forwards;
+}
+
+.doneBox[data-celebrate] .doneMark::after {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 2px solid var(--accent);
+  animation: burst 700ms 120ms ease-out both;
+  pointer-events: none;
+}
+
+@keyframes doneIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.98);
+  }
+}
+
+@keyframes iconPop {
+  0% {
+    transform: scale(0.4) rotate(-20deg);
+    opacity: 0;
+  }
+  100% {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+@keyframes drawCheck {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes burst {
+  from {
+    opacity: 0.8;
+    transform: scale(0.6);
+  }
+  to {
+    opacity: 0;
+    transform: scale(2.2);
+  }
 }
 
 .doneBox > div {
@@ -593,15 +685,27 @@ ol.list {
   padding: 10px 14px;
   border-radius: 10px;
   border: 1px solid var(--accent);
-  color: var(--accent);
+  color: var(--accent-text);
   font-weight: 700;
   text-decoration: none;
 }
 
 .linkBlock:hover {
-  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  background: var(--accent-soft);
 }
 
 .linkArrow {
   margin-inline-start: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .doneBox[data-celebrate],
+  .doneBox[data-celebrate] .doneMark svg,
+  .doneBox[data-celebrate] .doneMark svg path,
+  .doneBox[data-celebrate] .doneMark::after {
+    animation: none;
+  }
+  .doneBox[data-celebrate] .doneMark svg path {
+    stroke-dashoffset: 0;
+  }
 }
