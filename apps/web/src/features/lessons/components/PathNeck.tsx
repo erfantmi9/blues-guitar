@@ -23,13 +23,15 @@ export function PathNeck({ stages, statuses, isLessonDone }: Props) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const currentRef = useRef<HTMLElement | null>(null);
 
-  // On a phone: put the in-progress stage in the middle of the view (horizontal scroll only, no page jump)
+  // On a phone: put the first in-progress stage in the middle of the view (horizontal scroll only, no page jump)
   useLayoutEffect(() => {
     const box = scrollRef.current;
     const cur = currentRef.current;
     if (!box || !cur || box.scrollWidth <= box.clientWidth) return;
     box.scrollLeft = cur.offsetLeft - (box.clientWidth - cur.offsetWidth) / 2;
   }, []);
+
+  const firstInProgress = stages.find((s) => statuses.get(s.id) === "in-progress")?.id;
 
   return (
     <div ref={scrollRef} className={styles.scroll} dir="ltr" aria-hidden="true">
@@ -68,7 +70,8 @@ export function PathNeck({ stages, statuses, isLessonDone }: Props) {
             // Frets get slightly narrower toward the body, like a real neck
             style: { flexGrow: 2 ** (-i / 24) },
             tabIndex: -1,
-            ref: status === "in-progress" ? (el: HTMLElement | null) => void (currentRef.current = el) : undefined,
+            // Several stages can be in progress at once; the view centers on the first one
+            ref: stage.id === firstInProgress ? (el: HTMLElement | null) => void (currentRef.current = el) : undefined,
           };
 
           // Open stage → its next lesson. Locked / coming soon → the same stage in the list below.

@@ -709,3 +709,20 @@ ol.list {
     stroke-dashoffset: 0;
   }
 }
+
+/* ===== Preformatted text (text tab) ===== */
+
+.pre {
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  overflow-x: auto;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  box-shadow: inset 0 2px 8px var(--dot-edge);
+  font-family: var(--font-mono);
+  font-size: 15px;
+  line-height: 1.45;
+  text-align: left;
+  white-space: pre;
+}

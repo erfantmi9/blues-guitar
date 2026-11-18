@@ -118,6 +118,20 @@ export function ContentBlockView({ block }: { block: ContentBlock }) {
         </figure>
       );
 
+    case "pre":
+      return (
+        <figure className={styles.figure}>
+          <pre className={styles.pre} dir="ltr">
+            {block.text}
+          </pre>
+          {block.caption && (
+            <figcaption className={styles.figcaption}>
+              <RichText text={block.caption} />
+            </figcaption>
+          )}
+        </figure>
+      );
+
     case "link":
       return (
         <Link to={block.to} className={styles.linkBlock}>

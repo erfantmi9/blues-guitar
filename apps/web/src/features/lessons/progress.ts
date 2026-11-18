@@ -76,22 +76,21 @@ export function useLessonProgress(lesson: Lesson) {
 }
 
 /**
- * Stage status, in path order:
+ * Stage status:
  * - no lessons → coming soon
- * - previous stage not done → locked
  * - all lessons done → done, otherwise in progress
+ *
+ * Any stage that has lessons is open; it is not locked until the previous stage is
+ * finished (the user is free to choose). The "locked" type is kept for possible later use.
  */
 export function computeStageStatuses(stages: Stage[], done: (lessonId: string) => boolean): Map<string, StageStatus> {
   const result = new Map<string, StageStatus>();
-  let previousDone = true;
   for (const stage of stages) {
     let status: StageStatus;
     if (stage.lessons.length === 0) status = "coming-soon";
-    else if (!previousDone) status = "locked";
     else if (stage.lessons.every((l) => done(l.id))) status = "done";
     else status = "in-progress";
     result.set(stage.id, status);
-    previousDone = status === "done";
   }
   return result;
 }

@@ -26,7 +26,9 @@ export type ContentBlock =
       caption?: string;
     }
   /** Link to another page in the app, e.g. "/practice?exercise=…" */
-  | { type: "link"; to: string; text: string };
+  | { type: "link"; to: string; text: string }
+  /** Preformatted monospace text, left-to-right (e.g. a text tab); line breaks preserved */
+  | { type: "pre"; text: string; caption?: string };
 
 export type Section = {
   /** Stable within the lesson */

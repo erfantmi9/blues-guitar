@@ -8,7 +8,8 @@ import type { PlayerView } from "../useTabPlayer";
 import styles from "../tabPlayer.module.css";
 
 // Fixed pixel geometry (not viewBox scaling) so note size stays the same on phones; wide exercises scroll
-const BEAT_W = 64;
+/** Pixel space per note: whole-beat exercises 64px per beat; subdivided ones 44px per note, so boxes don't overlap */
+const beatWidth = (subdivisions: number) => (subdivisions > 1 ? 44 * subdivisions : 64);
 const PAD_L = 34;
 const TOP = 34;
 const GAP = 30;
@@ -16,8 +17,9 @@ const BOTTOM = TOP + GAP * 5;
 const H = BOTTOM + 22;
 const STRING_NAMES = ["e", "B", "G", "D", "A", "E"]; // index = string - 1
 
-const x = (pos: number) => PAD_L + BEAT_W / 2 + pos * BEAT_W;
-const y = (string: number) => TOP + (6 - string) * GAP; // string 1 at the bottom, like the fretboard
+// Standard tab: string 1 (thinnest, e) on the top line, string 6 (thickest, E) on the bottom.
+// Display only; the data (string: 1..6) and the fretboard (string 1 at the bottom) are unchanged.
+const y = (string: number) => TOP + (string - 1) * GAP;
 
 type Props = {
   exercise: TabExercise;
@@ -28,6 +30,8 @@ type Props = {
 
 export function TabStaff({ exercise, view, subdivisions, reducedMotion }: Props) {
   const total = exerciseLengthBeats(exercise);
+  const beatW = beatWidth(subdivisions);
+  const x = (pos: number) => PAD_L + beatW / 2 + pos * beatW;
   const width = x(total) + 10;
   const scrollRef = useRef<HTMLDivElement>(null);
   const headRef = useRef<SVGGElement>(null);
@@ -94,7 +98,7 @@ export function TabStaff({ exercise, view, subdivisions, reducedMotion }: Props)
 
         {/* Bar lines; the end has a double line */}
         {Array.from({ length: exercise.bars + 1 }, (_, b) => {
-          const bx = PAD_L + b * exercise.beatsPerBar * BEAT_W;
+          const bx = PAD_L + b * exercise.beatsPerBar * beatW;
           return <line key={b} x1={bx} x2={bx} y1={y(6)} y2={y(1)} className={styles.barLine} />;
         })}
         <line x1={width - 10} x2={width - 10} y1={y(6)} y2={y(1)} className={styles.barLineEnd} />

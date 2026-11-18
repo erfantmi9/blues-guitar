@@ -1,7 +1,8 @@
-import { useEffect, useId, useMemo, useRef, useState, type KeyboardEvent } from "react";
+import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
 import type { FretPosition, HighlightedNote, NoteName, StringNumber } from "@bg/shared";
 import { playPluck } from "@/lib/audio/pluck";
 import { faNum } from "@/lib/format";
+import { usePrefersReducedMotion } from "@/lib/hooks/usePrefersReducedMotion";
 import { frequencyAt, noteAt } from "@/lib/music";
 import { createGeometry, DOT_R } from "./geometry";
 import styles from "./Fretboard.module.css";
@@ -49,6 +50,30 @@ export function Fretboard({
     [highlightedNotes, frets],
   );
   const highlightedKeys = useMemo(() => new Set(visible.map(keyOf)), [visible]);
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const reducedMotion = usePrefersReducedMotion();
+
+  // On a narrow screen the neck scrolls. If the highlighted notes are out of view (e.g. a scale
+  // on frets 5 to 8), scroll so they are visible. If they're already visible, don't scroll.
+  const positionsSig = visible.map(keyOf).join("|");
+  const didInitialScroll = useRef(false);
+  useLayoutEffect(() => {
+    const box = wrapRef.current;
+    const svg = box?.querySelector("svg");
+    if (!box || !svg || !visible.length || box.scrollWidth <= box.clientWidth) return;
+    const k = svg.clientWidth / g.W; // viewBox units → pixels
+    const xs = visible.map((n) => g.noteX(n.fret) * k);
+    const pad = DOT_R * k * 1.6;
+    const lo = Math.min(...xs) - pad;
+    const hi = Math.max(...xs) + pad;
+    const view = box.clientWidth;
+    if (lo >= box.scrollLeft && hi <= box.scrollLeft + view) return;
+    const left = hi - lo <= view ? (lo + hi) / 2 - view / 2 : lo;
+    const instant = reducedMotion || !didInitialScroll.current;
+    box.scrollTo({ left: Math.max(0, left), behavior: instant ? "auto" : "smooth" });
+    didInitialScroll.current = true;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [positionsSig, g]);
 
   /** Highlighted dots clicked once: their note name stays visible */
   const [revealed, setRevealed] = useState<ReadonlySet<string>>(new Set());
@@ -153,7 +178,7 @@ export function Fretboard({
   };
 
   return (
-    <div className={styles.wrap} dir="ltr">
+    <div ref={wrapRef} className={styles.wrap} dir="ltr">
       <svg viewBox={`0 0 ${g.W} ${g.H}`} className={styles.svg} role="group" aria-label={ariaLabel}>
         <defs>
           {/* Dark wood: darker toward the edges of the neck */}
