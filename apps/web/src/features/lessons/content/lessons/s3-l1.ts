@@ -1,20 +1,8 @@
-import type { HighlightedNote, Lesson } from "@bg/shared";
+import type { Lesson } from "@bg/shared";
+import { A_MINOR_PENTATONIC_POS1 } from "@/lib/music/shapes";
 
-// A minor pentatonic, position 1: two notes per string; the finger number is the label
-const POSITION_1: HighlightedNote[] = [
-  { string: 6, fret: 5, label: "۱", variant: "root" },
-  { string: 6, fret: 8, label: "۴" },
-  { string: 5, fret: 5, label: "۱" },
-  { string: 5, fret: 7, label: "۳" },
-  { string: 4, fret: 5, label: "۱" },
-  { string: 4, fret: 7, label: "۳", variant: "root" },
-  { string: 3, fret: 5, label: "۱" },
-  { string: 3, fret: 7, label: "۳" },
-  { string: 2, fret: 5, label: "۱" },
-  { string: 2, fret: 8, label: "۴" },
-  { string: 1, fret: 5, label: "۱", variant: "root" },
-  { string: 1, fret: 8, label: "۴" },
-];
+// A minor pentatonic, position 1: shared with the backing track page
+const POSITION_1 = [...A_MINOR_PENTATONIC_POS1];
 
 const lesson: Lesson = {
   id: "s3-l1",

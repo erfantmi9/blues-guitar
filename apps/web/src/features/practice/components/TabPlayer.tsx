@@ -169,7 +169,7 @@ export function TabPlayer({
 }
 
 /** Manual delay compensation: for when the browser misreports the audio output latency (e.g. Bluetooth) */
-function LatencySetting({
+export function LatencySetting({
   value,
   onChange,
   onStep,

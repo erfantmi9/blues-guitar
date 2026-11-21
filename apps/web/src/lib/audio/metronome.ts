@@ -118,6 +118,11 @@ export type MetronomeOptions = {
   accent?: boolean;
   /** Ticks per beat (default 1) */
   subdivisions?: number;
+  /**
+   * Play the click sound on beats (default true). The backing track turns it off
+   * and uses the scheduler only as a clock (onSchedule/onBeat still fire).
+   */
+  click?: boolean;
   /** How often the scheduler wakes up (ms) */
   lookaheadMs?: number;
   /** How far ahead it schedules (seconds) */
@@ -126,7 +131,10 @@ export type MetronomeOptions = {
 
 export type Metronome = ReturnType<typeof createMetronome>;
 
-/** Only one metronome plays at a time (e.g. the one at the top of the page and the TabPlayer) */
+/**
+ * Only one engine plays at a time: the metronome, the TabPlayer and the backing track all
+ * run on this scheduler, so starting any of them stops the others.
+ */
 let activeMetronome: { stop: () => void } | null = null;
 
 export function createMetronome(options: MetronomeOptions = {}) {
@@ -134,6 +142,7 @@ export function createMetronome(options: MetronomeOptions = {}) {
   let beatsPerBar = clampBeats(options.beatsPerBar ?? 4);
   let accent = options.accent ?? true;
   let subdivisions = clampSub(options.subdivisions ?? 1);
+  let click = options.click ?? true;
   let tickLimit = Infinity;
   const lookaheadMs = options.lookaheadMs ?? 25;
   const aheadSec = options.scheduleAheadSec ?? 0.12;
@@ -185,7 +194,7 @@ export function createMetronome(options: MetronomeOptions = {}) {
     const res = scheduleWindow(state, ctx.currentTime + horizon, bpm, beatsPerBar, subdivisions, tickLimit);
     for (const b of res.beats) {
       const accented = accent && b.beat === 0 && b.sub === 0;
-      if (b.sub === 0) playClick(ctx, b.time, accented);
+      if (b.sub === 0 && click) playClick(ctx, b.time, accented);
       const event: BeatEvent = { ...b, accent: accented, secondsPerTick: step };
       scheduleListeners.forEach((l) => l(event));
       queue.push(event);
@@ -289,6 +298,11 @@ export function createMetronome(options: MetronomeOptions = {}) {
 
     setAccent(value: boolean) {
       accent = value;
+    },
+
+    /** Click sound on/off (scheduling and callbacks are unchanged) */
+    setClick(value: boolean) {
+      click = value;
     },
 
     /** Ticks per beat; set before start */

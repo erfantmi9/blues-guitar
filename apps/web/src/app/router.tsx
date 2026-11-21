@@ -15,6 +15,7 @@ export const router = createBrowserRouter([
       { path: "lesson/:lessonId", lazy: async () => ({ Component: (await import("@/features/lessons/LessonPage")).LessonPage }) },
       { path: "fretboard", lazy: async () => ({ Component: (await import("@/features/fretboard/FretboardPage")).FretboardPage }) },
       { path: "practice", lazy: async () => ({ Component: (await import("@/features/practice/PracticePage")).PracticePage }) },
+      { path: "backing", lazy: async () => ({ Component: (await import("@/features/practice/BackingPage")).BackingPage }) },
       { path: "log", lazy: async () => ({ Component: (await import("@/features/log/LogPage")).LogPage }) },
       { path: "glossary", lazy: async () => ({ Component: (await import("@/features/glossary/GlossaryPage")).GlossaryPage }) },
       { path: "settings", lazy: async () => ({ Component: (await import("@/features/settings/SettingsPage")).SettingsPage }) },

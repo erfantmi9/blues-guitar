@@ -1,5 +1,6 @@
 // Code shared between web and api: types and contracts.
 
+export * from "./backing";
 export * from "./lessons";
 export * from "./music";
 export * from "./practice";

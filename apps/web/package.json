@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc -p . && vite build",
     "preview": "vite preview",
-    "typecheck": "tsc -p ."
+    "typecheck": "tsc -p . && tsc -p tsconfig.test.json",
+    "test": "tsx --test \"src/**/*.test.ts\""
   },
   "dependencies": {
     "@bg/shared": "^0.0.0",

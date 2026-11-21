@@ -1,0 +1,9 @@
+{
+  // Unit tests (node:test via tsx). Separate so Node types don't leak into the app code.
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "types": ["node", "vite/client"]
+  },
+  "include": ["src"],
+  "exclude": []
+}

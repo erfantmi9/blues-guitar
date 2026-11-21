@@ -14,7 +14,8 @@
     "dev:web": "npm run dev -w @bg/web",
     "dev:api": "npm run dev -w @bg/api",
     "build": "npm run build -w @bg/web",
-    "typecheck": "npm run typecheck --workspaces --if-present"
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm run test -w @bg/web"
   },
   "devDependencies": {
     "concurrently": "^10.0.7",

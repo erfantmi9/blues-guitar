@@ -1,0 +1,142 @@
+.player {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-4);
+  max-inline-size: 720px;
+  margin-inline: auto;
+}
+
+/* ===== Chord and bars ===== */
+
+.display {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.chordRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.chord {
+  font-size: clamp(3.2rem, 16vw, 4.5rem);
+  font-weight: 800;
+  line-height: 1;
+  color: var(--accent-text);
+  text-shadow: 0 0 28px var(--accent-glow);
+  transition: opacity var(--dur) ease-out;
+}
+
+.chord[data-dim] {
+  opacity: 0.45;
+}
+
+.status {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.bars {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bar {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-block-size: 64px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--muted);
+  font-weight: 700;
+  font-size: var(--fs-md);
+  /* Soft fade back when the bar ends */
+  transition: background var(--dur-slow) ease-out, border-color var(--dur-slow) ease-out, color var(--dur-slow) ease-out,
+    box-shadow var(--dur-slow) ease-out;
+}
+
+.bar[data-active] {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--text);
+  box-shadow: var(--glow);
+  transition: none;
+}
+
+.barNum {
+  position: absolute;
+  inset-block-start: 2px;
+  inset-inline-start: 6px;
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--muted);
+}
+
+/* ===== Controls ===== */
+
+.slider {
+  inline-size: 100%;
+  block-size: 32px;
+  accent-color: var(--accent);
+  margin: 0;
+}
+
+.slider:disabled {
+  opacity: 0.4;
+}
+
+.mixer {
+  display: grid;
+  gap: var(--space-1);
+  margin: 0;
+  padding: var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  min-inline-size: 0;
+}
+
+.legend {
+  padding-inline: var(--space-1);
+  font-weight: 600;
+}
+
+.channel {
+  display: grid;
+  grid-template-columns: 7.5rem minmax(0, 1fr);
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.channelLabel {
+  min-block-size: 44px;
+  display: flex;
+  align-items: center;
+  padding-inline-start: 30px; /* lines up with the checkbox labels above */
+}
+
+.figure {
+  margin: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+
+.caption {
+  color: var(--muted);
+  font-size: var(--fs-sm);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bar,
+  .chord {
+    transition: none;
+  }
+}
