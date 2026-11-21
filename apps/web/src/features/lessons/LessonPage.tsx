@@ -5,6 +5,7 @@ import { BookOpen, ChevronRight, Target } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { durationToSeconds, faNum, formatDuration } from "@/lib/format";
+import { NotFoundPage } from "@/app/NotFoundPage";
 import { termsForLesson } from "@/features/glossary/content";
 import { getLesson, getStage } from "./content";
 import { useLessonProgress } from "./progress";
@@ -21,14 +22,7 @@ export function LessonPage() {
   const { lessonId = "" } = useParams();
   const lesson = getLesson(lessonId);
 
-  if (!lesson) {
-    return (
-      <>
-        <PageHeader title="درس پیدا نشد" />
-        <Link to="/path">بازگشت به مسیر</Link>
-      </>
-    );
-  }
+  if (!lesson) return <NotFoundPage />;
   // key: switching lessons resets the timer state
   return <LessonView key={lesson.id} lesson={lesson} />;
 }

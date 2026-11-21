@@ -6,7 +6,7 @@ const lesson: Lesson = {
   session: 2,
   title: "خوندن `Tab` و پیک رفت‌وبرگشت",
   goal: "بتوانی یک `Tab` ساده را بخوانی، با پیک رفت‌وبرگشت (`Alternate Picking`) بزنی، و چهار انگشت دست چپت را مستقل از هم کنترل کنی.",
-  duration: { min: 35, max: 40 },
+  duration: { min: 30, max: 35 },
 
   sections: [
     {

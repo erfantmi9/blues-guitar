@@ -1,0 +1,95 @@
+.section {
+  display: grid;
+  gap: var(--space-3);
+  margin-block-end: var(--space-4);
+  scroll-margin-block-start: 72px;
+}
+
+.sectionTitle {
+  margin: 0;
+  font-size: var(--fs-lg);
+}
+
+.reminder,
+.muted {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--fs-sm);
+}
+
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+/* Opened by the visible button */
+.fileInput {
+  display: none;
+}
+
+.error,
+.success,
+.warning {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  margin: 0;
+  padding: var(--space-3);
+  border-radius: var(--radius-sm);
+}
+
+.error svg,
+.success svg,
+.warning svg {
+  flex: none;
+  margin-block-start: 4px;
+}
+
+.error {
+  border: 1px solid var(--danger);
+  background: var(--danger-soft);
+}
+
+.success {
+  border: 1px solid var(--success);
+  background: var(--success-soft);
+}
+
+.warning {
+  border: 1px solid var(--warning);
+  background: var(--warning-soft);
+  font-weight: 600;
+}
+
+.confirm {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.confirmTitle {
+  margin: 0;
+  font-weight: 700;
+}
+
+.table {
+  inline-size: 100%;
+  border-collapse: collapse;
+  font-size: var(--fs-sm);
+}
+
+.table th,
+.table td {
+  padding: var(--space-2);
+  border-block-end: 1px solid var(--border);
+  text-align: start;
+}
+
+.table td {
+  font-weight: 700;
+}
+
+.table thead th {
+  color: var(--muted);
+  font-weight: 600;
+}

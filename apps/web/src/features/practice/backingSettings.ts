@@ -54,3 +54,6 @@ export function useBackingSettings() {
     setMaster: useCallback((v: number) => set((s) => ({ ...s, mix: { ...s.mix, master: clamp01(v) } })), [set]),
   };
 }
+
+/** For backup/restore (features/settings) */
+export { key as backingSettingsKey };

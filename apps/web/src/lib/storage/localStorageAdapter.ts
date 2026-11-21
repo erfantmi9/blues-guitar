@@ -51,6 +51,23 @@ export function createLocalStorageAdapter(prefix: string): StorageAdapter {
       }
     },
 
+    replace(entries) {
+      const s = ls();
+      if (!s) throw new Error("localStorage unavailable");
+      const before = new Map(entries.map(({ key }) => [key, s.getItem(full(key))]));
+      try {
+        // Free replaced values first so a full store can still accept a smaller backup.
+        for (const { key } of entries) s.removeItem(full(key));
+        for (const { key, raw } of entries) if (raw !== null) s.setItem(full(key), raw);
+      } catch (error) {
+        // Remove partial writes before restoring, reclaiming the original quota.
+        for (const { key } of entries) s.removeItem(full(key));
+        for (const [key, raw] of before) if (raw !== null) s.setItem(full(key), raw);
+        throw error;
+      }
+      for (const { key } of entries) unsaved.delete(key);
+    },
+
     onExternalChange(listener) {
       if (typeof window === "undefined") return () => {};
       const handler = (e: StorageEvent) => {

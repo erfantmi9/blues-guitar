@@ -75,6 +75,45 @@ export function createStore(adapter: StorageAdapter) {
     emit(def.key);
   }
 
+  /**
+   * Replaces several keys at once (backup restore): every value is serialized first, then written; keys in
+   * `removes` are deleted. All or nothing: if anything fails, every touched key goes back to its previous raw value.
+   */
+  function replace(writes: { def: KeyDef<unknown>; value: unknown }[], removes: KeyDef<unknown>[] = []): void {
+    const savedAt = new Date().toISOString();
+    // 1) Serialize everything before touching storage
+    const raws = writes.map((w) => ({
+      key: w.def.key,
+      raw: JSON.stringify({ v: w.def.version, savedAt, data: w.value } satisfies Envelope<unknown>),
+    }));
+    const touched = [...new Set([...raws.map((r) => r.key), ...removes.map((d) => d.key)])];
+    const before = new Map(touched.map((k) => [k, adapter.read(k)]));
+    if (adapter.replace) {
+      adapter.replace([...raws, ...removes.map((d) => ({ key: d.key, raw: null }))]);
+      for (const k of touched) cache.delete(k);
+      emit(null);
+      return;
+    }
+    try {
+      for (const r of raws) adapter.write(r.key, r.raw);
+      for (const d of removes) adapter.remove(d.key);
+    } catch (err) {
+      // 2) Roll back
+      for (const [k, raw] of before) {
+        try {
+          if (raw === null) adapter.remove(k);
+          else adapter.write(k, raw);
+        } catch {
+          /* best effort */
+        }
+      }
+      throw err;
+    } finally {
+      for (const k of touched) cache.delete(k);
+      emit(null);
+    }
+  }
+
   function subscribe(listener: Listener): () => void {
     listeners.add(listener);
     return () => listeners.delete(listener);
@@ -84,6 +123,9 @@ export function createStore(adapter: StorageAdapter) {
     get,
     set,
     remove,
+    replace,
+    /** Stored raw text of a key (for backup export); null if absent */
+    readRaw: (key: string) => adapter.read(key),
     subscribe,
     /** Increments on every change; useful for views that read several keys */
     getRevision: () => revision,

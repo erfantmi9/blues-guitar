@@ -61,3 +61,6 @@ export function useExerciseSettings() {
     ),
   };
 }
+
+/** For backup/restore (features/settings) */
+export { key as exerciseSettingsKey };

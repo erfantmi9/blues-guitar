@@ -1,46 +1,426 @@
+/* Home. Tokens only; new motion is transform/opacity and stops under reduced-motion (--dur tokens are zeroed). */
+
+.page {
+  display: grid;
+  gap: var(--space-5);
+}
+
+/* ===== Hero ===== */
+
+.hero {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-4);
+  align-items: center;
+  overflow: hidden;
+  padding: var(--space-5) var(--space-4);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  background:
+    radial-gradient(120% 90% at 0% 0%, var(--bg-glow), transparent 60%),
+    linear-gradient(160deg, var(--surface), var(--surface-2));
+  box-shadow: var(--shadow-2);
+}
+
+.heroText {
+  display: grid;
+  gap: var(--space-3);
+  animation: up var(--dur-slow) var(--ease-out) both;
+}
+
+/* Phone: the big mark sits small in the corner, behind nothing important */
+.heroMark {
+  position: absolute;
+  inset-block-start: var(--space-4);
+  inset-inline-end: var(--space-4);
+  opacity: 0.9;
+}
+
+.heroMark svg {
+  inline-size: 56px;
+  block-size: 56px;
+}
+
+.kicker {
+  margin: 0;
+  color: var(--accent-text);
+  font-weight: 700;
+  font-size: var(--fs-sm);
+}
+
+.brandTitle {
+  margin: 0;
+  font-size: clamp(2.4rem, 11vw, 3.6rem);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.accent {
+  color: var(--accent-text);
+}
+
+.lead {
+  margin: 0;
+  max-inline-size: 34ch;
+  font-size: var(--fs-md);
+}
+
+.continueTitle {
+  margin: 0;
+  padding-inline-end: 64px; /* room for the corner mark on a phone */
+  font-size: var(--fs-xl);
+  line-height: var(--lh-tight);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-block-start: var(--space-1);
+}
+
+.primary,
+.secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-block-size: 52px;
+  padding-inline: var(--space-5);
+  border-radius: 14px;
+  font-weight: 800;
+  text-decoration: none;
+  touch-action: manipulation;
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+
+.primary {
+  flex: 1 1 100%;
+  font-size: var(--fs-md);
+  background: linear-gradient(180deg, var(--accent-hi), var(--accent));
+  border: 1px solid var(--accent-edge);
+  color: var(--accent-contrast);
+  box-shadow: 0 1px 0 var(--highlight-inset) inset, 0 6px 20px var(--accent-glow);
+}
+
+.secondary {
+  flex: 1 1 100%;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  color: var(--text);
+}
+
+.primary:active,
+.secondary:active {
+  transform: scale(0.98);
+}
+
+.primary:focus-visible,
+.secondary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+@media (min-width: 560px) {
+  .primary,
+  .secondary {
+    flex: 0 1 auto;
+  }
+}
+
+/* Wider: text and a large mark side by side, no empty space */
+@media (min-width: 720px) {
+  .hero {
+    grid-template-columns: minmax(0, 1fr) auto;
+    padding: var(--space-6);
+  }
+
+  .heroMark {
+    position: static;
+    opacity: 1;
+  }
+
+  .heroMark svg {
+    inline-size: auto;
+    block-size: auto;
+  }
+
+  .continueTitle {
+    padding-inline-end: 0;
+  }
+}
+
+@keyframes up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+/* ===== "How it works" ===== */
+
+.sectionTitle {
+  margin: 0 0 var(--space-3);
+  font-size: var(--fs-lg);
+}
+
+.how {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 720px) {
+  .how {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-3);
+  }
+}
+
+.howCard {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  block-size: 100%;
+  min-block-size: 64px;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: var(--shadow-1);
+}
+
+.howCard:hover,
+.howCard:focus-visible {
+  border-color: var(--accent);
+}
+
+.howIcon {
+  flex: none;
+  color: var(--accent-text);
+}
+
+@media (min-width: 720px) {
+  .howCard {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: var(--space-4);
+  }
+}
+
+.notes {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.note {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--fs-sm);
+}
+
+.note svg {
+  flex: none;
+  margin-block-start: 4px;
+  color: var(--accent-2-text);
+}
+
+/* ===== Returning: path, routine, stats ===== */
+
+.neck {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.more {
+  display: inline-flex;
+  align-items: center;
+  justify-self: end;
+  gap: 2px;
+  min-block-size: 40px;
+  color: var(--accent-2-text);
+  font-weight: 700;
+  font-size: var(--fs-sm);
+  text-decoration: none;
+}
+
+.grid {
+  display: grid;
+  gap: var(--space-4);
+  align-items: start;
+}
+
+@media (min-width: 720px) {
+  .grid {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  }
+
+  /* No routine (every lesson done): the two cards share the full width */
+  .grid[data-solo] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .grid[data-solo] .side {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+  }
+}
+
+.side {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.card {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: var(--shadow-1);
+}
+
 .cardTitle {
-  font-size: 1.05rem;
+  margin: 0;
+  font-size: var(--fs-md);
 }
 
 .routine {
+  display: grid;
   margin: 0;
-  padding-inline-start: 1.2em;
+  padding: 0;
+  list-style: none;
 }
 
-.routine li {
+.routine li + li {
+  border-block-start: 1px dashed var(--border);
+}
+
+.row {
   display: flex;
-  justify-content: space-between;
-  padding-block: 6px;
-  border-block-end: 1px dashed var(--border);
+  align-items: center;
+  gap: var(--space-2);
+  min-block-size: var(--touch);
+  color: var(--text);
+  text-decoration: none;
 }
 
-.routine li:last-child {
-  border: none;
+a.row {
+  color: var(--accent-2-text);
+  font-weight: 600;
+}
+
+a.row:hover .rowTitle,
+a.row:focus-visible .rowTitle {
+  text-decoration: underline;
+}
+
+.row > svg:first-child {
+  flex: none;
+}
+
+.rowDot {
+  flex: none;
+  inline-size: 16px;
+  display: grid;
+  place-items: center;
+}
+
+.rowDot::before {
+  content: "";
+  inline-size: 6px;
+  block-size: 6px;
+  border-radius: 50%;
+  background: var(--border-strong);
+}
+
+.rowTitle {
+  flex: 1;
+  min-inline-size: 0;
 }
 
 .min {
+  flex: none;
   color: var(--muted);
-  font-size: 0.9em;
+  font-size: var(--fs-sm);
+  font-weight: 400;
 }
 
-.quick {
+.rowChevron {
+  flex: none;
+  margin-inline-start: calc(-1 * var(--space-1));
+}
+
+.stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 12px;
-  margin-block-start: 16px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-2);
+  margin: 0;
 }
 
-.quickLink {
-  display: block;
-  padding: 14px;
-  border-radius: var(--radius);
+.stat {
+  display: grid;
+  align-content: start;
+  gap: var(--space-1);
+  padding: var(--space-3) var(--space-2);
+  border-radius: var(--radius-sm);
   background: var(--surface-2);
-  text-decoration: none;
-  font-weight: 600;
   text-align: center;
 }
 
-.quickLink:hover {
-  background: var(--accent);
-  color: var(--accent-contrast);
+.stat dt {
+  order: 2;
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  line-height: var(--lh-tight);
+}
+
+.stat dd {
+  order: 1;
+  margin: 0;
+  font-size: var(--fs-xl);
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.of {
+  color: var(--muted);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.linkBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-block-size: var(--touch);
+  padding-inline: var(--space-3);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-strong);
+  background: var(--surface-2);
+  color: var(--text);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.linkBtn:hover,
+.linkBtn:focus-visible {
+  border-color: var(--accent);
 }

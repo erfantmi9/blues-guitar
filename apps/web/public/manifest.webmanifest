@@ -1,7 +1,7 @@
 {
-  "name": "تمرین بلوز",
-  "short_name": "بلوز",
-  "description": "مسیر شخصی یادگیری گیتار الکتریک بلوز",
+  "name": "Slow Bend",
+  "short_name": "Slow Bend",
+  "description": "گیتار بلوز، قدم‌به‌قدم. از صفر، با گیتار الکتریک، قدم‌به‌قدم تا اولین سولوی بلوز.",
   "lang": "fa",
   "dir": "rtl",
   "start_url": "/",

@@ -1,7 +1,10 @@
 # CLAUDE.md
 
 ## Project
-Personal site for learning electric guitar (Blues path). Persian, right-to-left (RTL).
+**Slow Bend** («گیتار بلوز، قدم‌به‌قدم»): a public site for learning electric guitar (Blues path) from zero. Persian, right-to-left (RTL).
+- Logo: `components/brand/Logo.tsx` (variants full / mark; colors from tokens). The static icons in `public/` (favicon.svg, icons/*.png) are drawn from the same geometry; regenerate them if the mark changes.
+- Menu (`app/navItems.ts`): `place: "bar"` items are in the phone's bottom bar, `place: "more"` go into «بیشتر» on a phone; the desktop sidebar shows all. The header holds only the logo.
+- Home (`features/dashboard`): logic in `home.ts` (tested). New user = no lesson started (ticked criterion, report, non-empty draft or completion) and no glossary term learned; practice settings don't count. Otherwise: continue the first unfinished lesson in path order, routine built from its Sections (rows link only to `/practice` or `/backing`), stats from stored data only (no streaks or BPM records).
 
 ## Structure (npm workspaces monorepo)
 - `apps/web`: Vite + React + TypeScript + React Router. The site.
@@ -52,3 +55,20 @@ Lesson and exercise content comes from the user's teacher. Enter the text **exac
 - `tsx` (used by `npm test`) is only declared in `apps/api`; it resolves through workspace hoisting.
 - The backing track page shows only the first track (`backingTracks[0]`), with no selector.
 - Stage status "locked" and the metronome's `setClick` are not used anywhere.
+
+## Public release configuration
+- The site owner must fill `feedbackEmail`, `repoUrl`, and `siteUrl` in `apps/web/src/config/site.ts`. They deliberately stay empty until supplied: no guessed email/domain/repository. Empty values hide feedback/repository links and canonical/og:url tags. No og:image or sitemap yet.
+- `/about` is lazy; footer links to `/about#privacy`. Unknown paths and invalid lesson/glossary-level IDs show the Persian 404. Initial lazy import failures are converted into throwing page components so the page boundary renders reliably; retry reloads the document because browsers may cache failed module imports.
+- Progress backup lives in settings. Keep existing storage key names/prefixes. Register new progress keys in `features/settings/backupKeys.ts` with schema validation. Imports reject unknown keys, newer schemas and files over 2 MiB, migrate supported older schemas, then ask for explicit replacement confirmation. Empty backups are valid. Imported strings are never rendered as HTML.
+- Persistent restore uses the adapter batch method (not normal writes that fall back to memory). It snapshots originals, frees replaced keys, and restores originals on write failure. Synchronous quota-failure rollback is tested; localStorage does not offer crash-safe or cross-tab transactions, so browser termination or simultaneous writes during restore remain limitations.
+- Security headers are in `vercel.json`. CSP is deliberately deferred: audio, workers and build asset loading need a separately designed/tested policy.
+
+## Release verification — 2026-11-21
+- `npm run typecheck`, `npm test` (106 passing), `npm run build`, and `git diff --check` passed. `npm audit --json`: zero vulnerabilities; no forced dependency updates.
+- Chrome headless, production preview, 390 and 1440 px, light/dark: about, settings, footer presence, unknown route, invalid lesson and glossary-level IDs, import summary/confirmation/success, visible keyboard button focus, blocked lazy chunk fallback and reload recovery checked. About screenshots inspected. JavaScript-disabled noscript text checked. Test-origin storage cleared afterward.
+- Download generation/round-trip is unit-tested; automated browser download delivery was not confirmed. No axe/Lighthouse available in project; neither installed nor run. Full contrast/accessibility audit, real phone, reduced-motion, audio and Bluetooth were not tested.
+- Web source has no console.log or TODO. `apps/api/src/index.ts:9` logs API startup; that app is excluded from web deployment. Content-validation panels are DEV-gated.
+- Existing brand mentions (reported, not edited): Strat in `features/glossary/content/glossary/quiz-l0.ts:32`, `terms-l0.ts:118,135,153`, and a drawing comment in `features/glossary/instrument/art.tsx:2`; GuitarTuna/Fender Tune in `features/lessons/content/lessons/s1-l1.ts:60`.
+- Both requested level-2 quiz explanations already existed exactly. Lesson s2-l1 duration is 30–35 minutes.
+- Initial on-disk dist snapshot was 811,488 bytes (90 files); this predates this continuation and is not a reproducible pre-feature baseline. Compare final size against that snapshot only, not against an assumed clean release.
+- Build emits a non-blocking Vite notice about the extensionless site-config import and its future native config loader.

@@ -1,0 +1,3 @@
+# Crawling is allowed. No sitemap yet: the final address is not decided.
+User-agent: *
+Allow: /

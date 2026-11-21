@@ -1,28 +1,30 @@
 import { createBrowserRouter } from "react-router";
 import { Layout } from "./Layout";
 import { NotFoundPage } from "./NotFoundPage";
+import { pages } from "./pages";
+import { RouteError } from "./RouteError";
 
 /**
- * Each page is loaded lazily, so heavy dependencies such as Tone.js
- * only load when that page is opened.
+ * Each page is loaded lazily, so heavy dependencies such as Tone.js only load when that page is opened.
+ * Every page has its own error boundary (inside the layout, so the menu stays): a failed chunk download
+ * shows «صفحه بارگذاری نشد» instead of a blank page.
  */
 export const router = createBrowserRouter([
   {
     element: <Layout />,
+    errorElement: <RouteError />,
     children: [
-      { index: true, lazy: async () => ({ Component: (await import("@/features/dashboard/DashboardPage")).DashboardPage }) },
-      { path: "path", lazy: async () => ({ Component: (await import("@/features/lessons/PathPage")).PathPage }) },
-      { path: "lesson/:lessonId", lazy: async () => ({ Component: (await import("@/features/lessons/LessonPage")).LessonPage }) },
-      { path: "fretboard", lazy: async () => ({ Component: (await import("@/features/fretboard/FretboardPage")).FretboardPage }) },
-      { path: "practice", lazy: async () => ({ Component: (await import("@/features/practice/PracticePage")).PracticePage }) },
-      { path: "backing", lazy: async () => ({ Component: (await import("@/features/practice/BackingPage")).BackingPage }) },
-      { path: "log", lazy: async () => ({ Component: (await import("@/features/log/LogPage")).LogPage }) },
-      { path: "glossary", lazy: async () => ({ Component: (await import("@/features/glossary/GlossaryPage")).GlossaryPage }) },
-      { path: "glossary/instrument", lazy: async () => ({ Component: (await import("@/features/glossary/instrument/InstrumentPage")).InstrumentPage }) },
-      { path: "glossary/level/:levelId", lazy: async () => ({ Component: (await import("@/features/glossary/LevelPage")).LevelPage }) },
-      { path: "learn", lazy: async () => ({ Component: (await import("@/features/learn/LearnPage")).LearnPage }) },
-      { path: "learn/:articleId", lazy: async () => ({ Component: (await import("@/features/learn/ArticlePage")).ArticlePage }) },
-      { path: "settings", lazy: async () => ({ Component: (await import("@/features/settings/SettingsPage")).SettingsPage }) },
+      ...pages.map(({ path, load }) => {
+        const lazy = async () => {
+          try {
+            return await load();
+          } catch (error) {
+            // Render failures through the page boundary, including initial lazy-load failures.
+            return { Component: () => { throw error; } };
+          }
+        };
+        return path === "" ? { index: true, lazy, errorElement: <RouteError /> } : { path, lazy, errorElement: <RouteError /> };
+      }),
       { path: "*", Component: NotFoundPage },
     ],
   },

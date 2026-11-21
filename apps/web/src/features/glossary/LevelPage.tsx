@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { Link, useParams } from "react-router";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { NotFoundPage } from "@/app/NotFoundPage";
 import { Card } from "@/components/ui/Card";
 import { RichText } from "@/features/lessons/components/RichText";
 import { isLevelDone, QUIZ_PASS } from "@/lib/content/reference";
@@ -17,7 +18,8 @@ import styles from "./glossary.module.css";
 export function LevelPage() {
   const { levelId } = useParams();
   const id = Number(levelId);
-  const level = levelId !== undefined && Number.isInteger(id) ? getLevel(id) : undefined;
+  // Only plain level numbers ("2", not "2.0" or "02")
+  const level = levelId !== undefined && /^(0|[1-9]\d*)$/.test(levelId) ? getLevel(id) : undefined;
   const { progress, toggleLearned, recordQuiz } = useGlossaryProgress();
   const learned = useMemo(() => new Set(progress.learned), [progress.learned]);
   const terms = useMemo(() => termsOfLevel(id), [id]);
@@ -31,14 +33,7 @@ export function LevelPage() {
     </Link>
   );
 
-  if (!level) {
-    return (
-      <>
-        {back}
-        <Card>این سطح پیدا نشد.</Card>
-      </>
-    );
-  }
+  if (!level) return <NotFoundPage />;
 
   const learnedCount = terms.filter((t) => learned.has(t.id)).length;
   const best = progress.quizBest[String(level.id)];

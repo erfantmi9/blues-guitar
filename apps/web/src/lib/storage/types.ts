@@ -3,6 +3,8 @@ export interface StorageAdapter {
   read(key: string): string | null;
   write(key: string, raw: string): void;
   remove(key: string): void;
+  /** Persistent batch used by imports; must throw on failure rather than fall back to memory. */
+  replace?(entries: { key: string; raw: string | null }[]): void;
   /** Changes from outside (e.g. another tab). key=null means "unknown, re-read everything" */
   onExternalChange(listener: (key: string | null) => void): () => void;
 }

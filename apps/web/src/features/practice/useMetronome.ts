@@ -80,3 +80,6 @@ export function useMetronome() {
 
   return { settings, playing, current, stopReason, toggle, setBpm, setBeatsPerBar, setAccent };
 }
+
+/** For backup/restore (features/settings) */
+export { settingsKey as metronomeSettingsKey };
