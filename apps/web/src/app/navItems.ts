@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { AudioLines, BookOpen, Drum, GraduationCap, Guitar, House, ListChecks, Settings } from "lucide-react";
+import { AudioLines, BookOpen, Drum, GraduationCap, Guitar, House, Lightbulb, ListChecks, Settings } from "lucide-react";
 
 export type NavItem = {
   to: string;
@@ -17,6 +17,7 @@ export const navItems: NavItem[] = [
   { to: "/practice", label: "تمرین", icon: Drum, primary: true },
   { to: "/backing", label: "بکینگ‌ترک", icon: AudioLines, primary: true },
   { to: "/log", label: "ثبت", icon: ListChecks, primary: true },
+  { to: "/learn", label: "مفاهیم", icon: Lightbulb, primary: false },
   { to: "/glossary", label: "اصطلاحات", icon: BookOpen, primary: false },
   { to: "/settings", label: "تنظیمات", icon: Settings, primary: false },
 ];

@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useRef } from "react";
 import { Link, useParams } from "react-router";
 import type { Lesson } from "@bg/shared";
-import { ChevronRight, Target } from "lucide-react";
+import { BookOpen, ChevronRight, Target } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { durationToSeconds, faNum, formatDuration } from "@/lib/format";
+import { termsForLesson } from "@/features/glossary/content";
 import { getLesson, getStage } from "./content";
 import { useLessonProgress } from "./progress";
 import { useSessionTimer } from "./useSessionTimer";
@@ -54,6 +55,13 @@ function LessonView({ lesson }: { lesson: Lesson }) {
         <ChevronRight size={18} aria-hidden />
         مسیر یادگیری
       </Link>
+
+      {termsForLesson(lesson.id).length > 0 && (
+        <Link to={`/glossary?lesson=${lesson.id}`} className={styles.termsLink}>
+          <BookOpen size={16} aria-hidden />
+          اصطلاحات این درس
+        </Link>
+      )}
 
       <PageHeader
         title={`جلسه‌ی ${faNum(lesson.session)}: ${lesson.title.replace(/`/g, "")}`}

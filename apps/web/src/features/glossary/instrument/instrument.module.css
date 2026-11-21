@@ -1,0 +1,502 @@
+/* Instrument map. Colors only from tokens. Animations: transform/opacity only, off under prefers-reduced-motion. */
+
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  min-block-size: 36px;
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 0.95em;
+}
+
+.header {
+  margin-block: var(--space-2) var(--space-3);
+}
+
+.title {
+  margin: 0;
+  font-size: var(--fs-xl);
+  line-height: var(--lh-tight);
+}
+
+.subtitle {
+  margin: var(--space-1) 0 0;
+  color: var(--muted);
+}
+
+.progressRow {
+  display: grid;
+  gap: var(--space-1);
+  margin-block-end: var(--space-3);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+}
+
+/* ===== Tabs ===== */
+
+.tabs {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-1);
+  padding: var(--space-1);
+  margin-block-end: var(--space-3);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+}
+
+.tab {
+  min-block-size: 44px;
+  padding-inline: var(--space-1);
+  border: 0;
+  border-radius: calc(var(--radius) - 4px);
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-weight: 700;
+  font-size: var(--fs-sm);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.tab[aria-selected="true"] {
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: var(--shadow-1);
+}
+
+.tab:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+/* ===== Layout: map + card side by side on wide screens, card below the map on a phone ===== */
+
+.layout {
+  display: grid;
+  gap: var(--space-4);
+}
+
+@media (min-width: 760px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: start;
+  }
+
+  .cardCol {
+    position: sticky;
+    top: 72px;
+  }
+}
+
+.mapCol {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-3);
+}
+
+.map {
+  position: relative;
+  max-inline-size: 100%;
+  scroll-margin-block-start: 72px;
+}
+
+.svg {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+  /* Close-ups draw parts larger than the frame (the body runs past the edges): clip to the view */
+  overflow: hidden;
+  border-radius: var(--radius);
+}
+
+/* ===== Parts: selection lights one part and dims the rest ===== */
+
+.part {
+  transition: opacity var(--dur) var(--ease-out);
+}
+
+.map[data-dim] .part:not([data-on]) {
+  opacity: 0.4;
+}
+
+.glow {
+  pointer-events: none;
+  animation: fadeIn var(--dur) var(--ease-out);
+}
+
+.enter {
+  animation: viewIn var(--dur-slow) var(--ease-out);
+}
+
+@keyframes viewIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+}
+
+/* ===== Hotspots: real buttons over the drawing, 44×44 px each ===== */
+
+.hotspots {
+  position: absolute;
+  inset: 0;
+  animation: fadeIn var(--dur-slow) var(--ease-out);
+}
+
+.hotspot {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  inline-size: 44px;
+  block-size: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.hotspot:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -6px;
+}
+
+.pin {
+  inline-size: 14px;
+  block-size: 14px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid var(--surface);
+  box-shadow: 0 0 0 1px var(--dot-edge);
+  transition:
+    transform var(--dur) var(--ease-out),
+    opacity var(--dur) var(--ease-out);
+}
+
+.hotspot:hover .pin {
+  transform: scale(1.2);
+}
+
+.hotspot[data-learned] .pin {
+  background: var(--success);
+}
+
+.hotspot[aria-pressed="true"] .pin {
+  opacity: 0;
+  transform: scale(0.4);
+}
+
+/* ===== Animations ===== */
+
+/* Tuning peg: a short turn and back */
+.peg {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.peg[data-anim="a"] {
+  animation: pegA 650ms var(--ease-out);
+}
+
+.peg[data-anim="b"] {
+  animation: pegB 650ms var(--ease-out);
+}
+
+@keyframes pegA {
+  35% {
+    transform: rotate(-40deg);
+  }
+}
+
+@keyframes pegB {
+  35% {
+    transform: rotate(-40deg);
+  }
+}
+
+/* String: shakes sideways and settles (translate in viewBox units) */
+.string[data-anim="a"] {
+  animation: stringA 1s linear;
+}
+
+.string[data-anim="b"] {
+  animation: stringB 1s linear;
+}
+
+@keyframes stringA {
+  8% { transform: translateX(3px); }
+  16% { transform: translateX(-2.6px); }
+  24% { transform: translateX(2.2px); }
+  32% { transform: translateX(-1.8px); }
+  42% { transform: translateX(1.3px); }
+  52% { transform: translateX(-0.9px); }
+  64% { transform: translateX(0.6px); }
+  78% { transform: translateX(-0.3px); }
+}
+
+@keyframes stringB {
+  8% { transform: translateX(3px); }
+  16% { transform: translateX(-2.6px); }
+  24% { transform: translateX(2.2px); }
+  32% { transform: translateX(-1.8px); }
+  42% { transform: translateX(1.3px); }
+  52% { transform: translateX(-0.9px); }
+  64% { transform: translateX(0.6px); }
+  78% { transform: translateX(-0.3px); }
+}
+
+/* Knobs: rest at "low"; a tap turns them from low to high, and they stay high */
+.knob {
+  transform-box: fill-box;
+  transform-origin: center;
+  transform: rotate(-140deg);
+}
+
+.knob[data-turned] {
+  transform: rotate(140deg);
+}
+
+.knob[data-anim="a"] {
+  animation: knobA 900ms var(--ease-out);
+}
+
+.knob[data-anim="b"] {
+  animation: knobB 900ms var(--ease-out);
+}
+
+@keyframes knobA {
+  from { transform: rotate(-140deg); }
+  to { transform: rotate(140deg); }
+}
+
+@keyframes knobB {
+  from { transform: rotate(-140deg); }
+  to { transform: rotate(140deg); }
+}
+
+/* Tremolo arm: dips and comes back (origin = pivot, set inline in viewBox units) */
+.tremolo {
+  transform-box: view-box;
+}
+
+.tremolo[data-anim="a"] {
+  animation: tremA 700ms var(--ease-out);
+}
+
+.tremolo[data-anim="b"] {
+  animation: tremB 700ms var(--ease-out);
+}
+
+@keyframes tremA {
+  35% { transform: rotate(12deg); }
+}
+
+@keyframes tremB {
+  35% { transform: rotate(12deg); }
+}
+
+/* Pickup selector lever slides between the five positions */
+.lever {
+  transition: transform var(--dur-slow) var(--ease-out);
+}
+
+/* Pickups turned on by the switch */
+.lit {
+  opacity: 0;
+  transition: opacity var(--dur) var(--ease-out);
+}
+
+.lit[data-lit] {
+  opacity: 0.55;
+}
+
+.ampLabel {
+  font-family: var(--font-mono);
+  font-size: 7.5px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  fill: var(--wood-1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .peg[data-anim],
+  .string[data-anim],
+  .knob[data-anim],
+  .tremolo[data-anim],
+  .gainFill[data-anim],
+  .enter,
+  .hotspots,
+  .glow {
+    animation: none;
+  }
+}
+
+/* ===== Controls under the map ===== */
+
+.switchBox {
+  display: grid;
+  gap: var(--space-2);
+  inline-size: min(100%, 360px);
+}
+
+.segments {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: var(--space-1);
+  direction: ltr; /* 1 = bridge … 5 = neck, as numbered on the guitar */
+}
+
+.segment {
+  min-block-size: 44px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-strong);
+  background: var(--surface-2);
+  color: var(--text);
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.segment[aria-checked="true"] {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent-text);
+}
+
+.switchCaption {
+  margin: 0;
+  text-align: center;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+}
+
+.gainBox {
+  display: grid;
+  gap: var(--space-1);
+  inline-size: min(100%, 360px);
+}
+
+.gainLabel {
+  font-size: var(--fs-sm);
+  font-weight: 700;
+}
+
+.gainTrack {
+  block-size: 12px;
+  overflow: hidden;
+  border-radius: var(--radius-pill);
+  background: var(--surface-3);
+}
+
+.gainFill {
+  block-size: 100%;
+  background: linear-gradient(to left, var(--accent-2), var(--accent), var(--danger));
+  transform: scaleX(0);
+  transform-origin: 100% 50%; /* RTL: «تمیز» on the right, «کثیف» on the left */
+}
+
+.gainFill[data-full] {
+  transform: scaleX(1);
+}
+
+.gainFill[data-anim="a"] {
+  animation: fillA 900ms var(--ease-out);
+}
+
+.gainFill[data-anim="b"] {
+  animation: fillB 900ms var(--ease-out);
+}
+
+@keyframes fillA {
+  from { transform: scaleX(0); }
+}
+
+@keyframes fillB {
+  from { transform: scaleX(0); }
+}
+
+/* ===== Card ===== */
+
+.cardList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.hint {
+  color: var(--muted);
+}
+
+/* ===== Text list of all parts (screen readers, keyboard) ===== */
+
+.listSection {
+  margin-block-start: var(--space-6);
+}
+
+.listTitle {
+  margin: 0 0 var(--space-2);
+  font-size: var(--fs-lg);
+}
+
+.list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.listItem {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  inline-size: 100%;
+  min-block-size: 44px;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+
+.listItem:hover,
+.listItem:focus-visible {
+  border-color: var(--accent);
+}
+
+.listItem[aria-pressed="true"] {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.listFa {
+  font-weight: 700;
+}
+
+.listEn {
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+}
+
+.listCheck {
+  margin-inline-start: auto;
+  align-self: center;
+  color: var(--success-text);
+}

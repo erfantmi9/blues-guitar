@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import { CheckCircle2, ChevronLeft } from "lucide-react";
+import { BookOpen, CheckCircle2, ChevronLeft, Lightbulb } from "lucide-react";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { faNum, formatDuration } from "@/lib/format";
 import { useStorageRevision } from "@/lib/storage";
@@ -17,6 +17,17 @@ export function PathPage() {
   return (
     <>
       <PageHeader title="مسیر یادگیری" subtitle="از صفر تا اولین سولوی بلوز، در ۹ مرحله" />
+
+      <nav className={styles.refLinks} aria-label="یادگیری">
+        <Link to="/learn" className={styles.refLink}>
+          <Lightbulb size={18} aria-hidden />
+          مفاهیم
+        </Link>
+        <Link to="/glossary" className={styles.refLink}>
+          <BookOpen size={18} aria-hidden />
+          اصطلاحات
+        </Link>
+      </nav>
 
       {/* Visual map (aria-hidden). The list below is the semantic alternative for screen readers and keyboard users. */}
       <PathNeck stages={stages} statuses={statuses} isLessonDone={isLessonDone} />
