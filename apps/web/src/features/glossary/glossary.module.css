@@ -1,0 +1,735 @@
+/* Glossary path. Colors only from tokens; new motion only transform/opacity, zeroed by --dur under reduced-motion. */
+
+.devErrors {
+  border-color: var(--danger);
+  background: var(--danger-soft);
+  font-size: var(--fs-sm);
+  margin-block-end: var(--space-3);
+}
+
+.srOnly {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.muted {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--fs-sm);
+}
+
+/* ===== Search ===== */
+
+.toolbar {
+  position: sticky;
+  /* App header height, as for the player start bars */
+  top: calc(51px + max(10px, env(safe-area-inset-top)));
+  z-index: 5;
+  display: flex;
+  padding-block: var(--space-2);
+  background: var(--bg);
+}
+
+.search {
+  position: relative;
+  flex: 1 1 240px;
+  display: flex;
+}
+
+.search input {
+  inline-size: 100%;
+  min-block-size: var(--touch);
+  padding-inline: 40px var(--space-3);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+}
+
+.search input:focus-visible {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: var(--glow);
+}
+
+.searchIcon {
+  position: absolute;
+  inset-inline-start: 12px;
+  inset-block-start: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  pointer-events: none;
+}
+
+.count {
+  margin: var(--space-1) 0 var(--space-3);
+  color: var(--muted);
+  font-size: var(--fs-sm);
+}
+
+.results {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.resultRow {
+  display: grid;
+  gap: 2px;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  text-decoration: none;
+}
+
+.resultRow:hover,
+.resultRow:focus-visible {
+  border-color: var(--accent);
+}
+
+.resultMain {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-1) var(--space-3);
+}
+
+.resultLevel {
+  color: var(--muted);
+  font-size: var(--fs-sm);
+}
+
+.lessonFilter {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin-block: var(--space-2) var(--space-1);
+  font-weight: 700;
+}
+
+.filterChip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-block-size: var(--touch);
+  padding-inline: var(--space-3);
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--accent);
+  background: var(--accent-soft);
+  color: var(--text);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* ===== Top actions: continue + guitar map (soon) ===== */
+
+.topActions {
+  display: grid;
+  gap: var(--space-2);
+  margin-block: var(--space-2) var(--space-5);
+}
+
+.continue {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-block-size: var(--touch);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius);
+  background: linear-gradient(180deg, var(--accent-hi), var(--accent));
+  color: var(--accent-contrast);
+  font-weight: 800;
+  text-decoration: none;
+  box-shadow: 0 1px 0 var(--highlight-inset) inset, 0 4px 14px var(--accent-glow);
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+
+.continue:active {
+  transform: scale(0.98);
+}
+
+.continueText {
+  display: grid;
+}
+
+.continueSub {
+  font-weight: 500;
+  font-size: var(--fs-sm);
+}
+
+.allLearned {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  color: var(--success-text);
+  font-weight: 700;
+}
+
+.mapLink {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  justify-self: start;
+  min-block-size: var(--touch);
+  padding-inline: var(--space-3);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  color: var(--text);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.mapLink:hover,
+.mapLink:focus-visible {
+  border-color: var(--accent);
+}
+
+.soonBadge {
+  display: inline-flex;
+  padding: 0 var(--space-2);
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-strong);
+  font-size: var(--fs-xs);
+  color: var(--muted);
+}
+
+/* ===== Timeline (vertical, the line runs along the start edge) ===== */
+
+.timeline {
+  --node: 34px;
+  position: relative;
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.timeline::before {
+  content: "";
+  position: absolute;
+  inset-block: calc(var(--node) / 2);
+  inset-inline-start: calc(var(--node) / 2 - 1px);
+  inline-size: 2px;
+  background: var(--border-strong);
+}
+
+.step {
+  position: relative;
+  display: grid;
+  grid-template-columns: var(--node) minmax(0, 1fr);
+  gap: var(--space-3);
+  align-items: start;
+}
+
+.node {
+  position: relative;
+  display: grid;
+  place-items: center;
+  inline-size: var(--node);
+  block-size: var(--node);
+  margin-block-start: var(--space-3);
+  border-radius: 50%;
+  border: 2px solid var(--accent);
+  background: var(--surface);
+  color: var(--accent-text);
+  font-weight: 800;
+}
+
+.step[data-done] .node {
+  border-color: var(--success);
+  background: var(--success-soft);
+  color: var(--success-text);
+}
+
+.step[data-soon] .node {
+  border-color: var(--border-strong);
+  color: var(--muted);
+}
+
+.stepCard {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  text-decoration: none;
+  box-shadow: var(--shadow-1);
+}
+
+a.stepCard:hover,
+a.stepCard:focus-visible {
+  border-color: var(--accent);
+}
+
+.step[data-soon] .stepCard {
+  background: var(--surface-2);
+  box-shadow: none;
+  opacity: 0.6;
+}
+
+.stepBody {
+  display: grid;
+  gap: var(--space-1);
+  flex: 1;
+  min-inline-size: 0;
+}
+
+.levelTop {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-1) var(--space-2);
+}
+
+.levelName {
+  font-weight: 800;
+  font-size: var(--fs-md);
+}
+
+.levelSummary {
+  color: var(--muted);
+  font-size: var(--fs-sm);
+}
+
+.status {
+  padding: 0 var(--space-2);
+  border-radius: var(--radius-pill);
+  background: var(--accent-soft);
+  color: var(--text);
+  font-size: var(--fs-xs);
+  white-space: nowrap;
+}
+
+.status[data-status="done"] {
+  background: var(--success-soft);
+  color: var(--success-text);
+  font-weight: 700;
+}
+
+.status[data-status="soon"] {
+  background: transparent;
+  border: 1px solid var(--border-strong);
+  color: var(--muted);
+}
+
+.chevron {
+  flex: none;
+  color: var(--muted);
+}
+
+/* ===== Progress bar ===== */
+
+.progress {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.track {
+  flex: 1;
+  block-size: 8px;
+  overflow: hidden;
+  border-radius: var(--radius-pill);
+  background: var(--surface-3);
+}
+
+.fill {
+  block-size: 100%;
+  background: var(--accent);
+  /* RTL page: fills from the right */
+  transform-origin: 100% 50%;
+  transition: transform var(--dur-slow) var(--ease-out);
+}
+
+.progressText {
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  white-space: nowrap;
+}
+
+/* ===== Level page ===== */
+
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  min-block-size: 36px;
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 0.95em;
+}
+
+.levelHeader {
+  margin-block: var(--space-2) var(--space-4);
+}
+
+.levelKicker {
+  margin: 0;
+  color: var(--accent-text);
+  font-weight: 700;
+  font-size: var(--fs-sm);
+}
+
+.levelTitle {
+  margin: 0;
+  font-size: var(--fs-xl);
+  line-height: var(--lh-tight);
+}
+
+.intro {
+  display: grid;
+  gap: var(--space-2);
+  margin-block-end: var(--space-4);
+}
+
+.introText {
+  margin: 0;
+  font-weight: 600;
+}
+
+.introFoot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.introFoot:empty {
+  display: none;
+}
+
+.doneBadge {
+  justify-self: start;
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-pill);
+  background: var(--success-soft);
+  color: var(--success-text);
+  font-weight: 700;
+  font-size: var(--fs-sm);
+}
+
+.terms {
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.term {
+  display: grid;
+  /* minmax(0, …): the wide Fretboard scrolls inside its own box instead of widening the page */
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-2);
+  padding: var(--space-4);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: var(--shadow-1);
+  /* Below the sticky header when reached via #id */
+  scroll-margin-block-start: 80px;
+}
+
+/* The term reached via #id (set from the URL, since :target does not follow client-side navigation) */
+.term[data-target] {
+  border-color: var(--accent);
+  box-shadow: var(--glow);
+}
+
+.term[data-learned] {
+  border-color: var(--success);
+}
+
+.termHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-1) var(--space-3);
+}
+
+.en {
+  font-family: var(--font-mono);
+  font-weight: 800;
+  font-size: var(--fs-md);
+}
+
+.fa {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.definition {
+  margin: 0;
+}
+
+.chipRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-2);
+  font-size: var(--fs-sm);
+}
+
+.chipLabel {
+  color: var(--muted);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-block-size: 36px;
+  padding-inline: var(--space-3);
+  border-radius: var(--radius-pill);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  text-decoration: none;
+}
+
+.chip:hover,
+.chip:focus-visible {
+  border-color: var(--accent);
+}
+
+.chip[data-done] {
+  border-color: var(--success);
+  color: var(--success-text);
+}
+
+.meet {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  font-size: var(--fs-sm);
+  color: var(--muted);
+}
+
+.meetIcon {
+  flex: none;
+  margin-block-start: 5px;
+  color: var(--accent-2-text);
+}
+
+.meetLine {
+  display: block;
+}
+
+.lessonLink {
+  color: var(--accent-2-text);
+  font-weight: 600;
+}
+
+.figure {
+  margin: 0;
+}
+
+.caption {
+  margin-block-start: var(--space-1);
+  color: var(--muted);
+  font-size: var(--fs-sm);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-block-start: var(--space-1);
+}
+
+.learnedBtn,
+.listenBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-block-size: var(--touch);
+  padding-inline: var(--space-4);
+  border-radius: 12px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface-2);
+  color: var(--text);
+  font: inherit;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+
+.learnedBtn:active,
+.listenBtn:not(:disabled):active {
+  transform: scale(0.97);
+}
+
+.listenBtn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.learnedBtn svg {
+  opacity: 0.35;
+}
+
+.learnedBtn[aria-pressed="true"] {
+  border-color: var(--success);
+  background: var(--success-soft);
+  color: var(--success-text);
+}
+
+.learnedBtn[aria-pressed="true"] svg {
+  opacity: 1;
+}
+
+/* ===== Quiz ===== */
+
+.quizSection {
+  display: grid;
+  gap: var(--space-2);
+  margin-block-start: var(--space-6);
+  scroll-margin-block-start: 80px;
+}
+
+.sectionTitle {
+  margin: 0;
+  font-size: var(--fs-lg);
+}
+
+.quizBox {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.quizCount {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--fs-sm);
+}
+
+.quizPrompt,
+.quizResult {
+  margin: 0;
+  font-size: var(--fs-md);
+  line-height: var(--lh-body);
+}
+
+.quizPrompt:focus,
+.quizResult:focus {
+  outline: none;
+}
+
+.options {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-block-size: var(--touch);
+  padding: var(--space-2) var(--space-4);
+  border-radius: 12px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface-2);
+  color: var(--text);
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+
+.option:not(:disabled):hover {
+  border-color: var(--accent);
+}
+
+.option:not(:disabled):active {
+  transform: scale(0.98);
+}
+
+.option:disabled {
+  cursor: default;
+}
+
+.option[data-state="correct"] {
+  border-color: var(--success);
+  background: var(--success-soft);
+  color: var(--success-text);
+  font-weight: 700;
+}
+
+.option[data-state="wrong"] {
+  border-color: var(--danger);
+  background: var(--danger-soft);
+}
+
+.option[data-state="dim"] {
+  opacity: 0.55;
+}
+
+.feedback {
+  padding: var(--space-3);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--danger);
+  background: var(--danger-soft);
+  animation: rise var(--dur) var(--ease-out);
+}
+
+.feedback[data-correct] {
+  border-color: var(--success);
+  background: var(--success-soft);
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .feedback {
+    animation: none;
+  }
+}
+
+/* ===== Level navigation ===== */
+
+.levelNav {
+  display: flex;
+  justify-content: space-between;
+  margin-block-start: var(--space-5);
+}
+
+.levelNavLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  min-block-size: var(--touch);
+  color: var(--accent-2-text);
+  font-weight: 700;
+  text-decoration: none;
+}

@@ -137,6 +137,11 @@ export type Metronome = ReturnType<typeof createMetronome>;
  */
 let activeMetronome: { stop: () => void } | null = null;
 
+/** Stops whichever engine is playing (metronome, TabPlayer or backing track), if any. */
+export function stopActiveMetronome(): void {
+  activeMetronome?.stop();
+}
+
 export function createMetronome(options: MetronomeOptions = {}) {
   let bpm = clampBpm(options.bpm ?? 80);
   let beatsPerBar = clampBeats(options.beatsPerBar ?? 4);

@@ -4,6 +4,7 @@ export * from "./backing";
 export * from "./lessons";
 export * from "./music";
 export * from "./practice";
+export * from "./reference";
 
 export const API_PREFIX = "/api";
 
