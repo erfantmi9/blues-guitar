@@ -43,7 +43,7 @@ describe("glossary content", () => {
     assert.deepEqual(validateGlossary(content, lessonIds), []);
     assert.deepEqual(
       levels.map((l) => [l.id, l.available]),
-      [[0, true], [1, true], [2, true], [3, false], [4, false], [5, false], [6, false]],
+      [[0, true], [1, true], [2, true], [3, false], [4, false], [5, false], [6, false], [7, false]],
     );
   });
 
