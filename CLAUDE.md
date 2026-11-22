@@ -58,7 +58,13 @@ Lesson and exercise content comes from the user's teacher. Enter the text **exac
 - `tsx` (used by `npm test`) is only declared in `apps/api`; it resolves through workspace hoisting.
 - The backing track page shows only the first track (`backingTracks[0]`), with no selector.
 - Stage status "locked" and the metronome's `setClick` are not used anywhere.
-- **Production bundle broken (found 2026-11-22, predates the tracks change):** with the installed vite 8.3.8 / rolldown 1.2.19, `vite preview` of a fresh build shows the error page on every route ("Cannot read properties of null (reading 'useSyncExternalStore' / 'useContext' / 'useRef')"), also for a build of commit 7816887. Dev mode works. The `bundle.test.ts` referenced in `vite.config.ts` does not exist. Not yet investigated or fixed.
+
+## Build: duplicate React (fixed 2026-11-22)
+- **Symptom:** production build showed the error page on every lazy page ("Cannot read properties of null (reading 'useSyncExternalStore' / 'useContext' / 'useRef')"); layout and menu still rendered; dev mode was fine.
+- **Cause:** the `@` alias was an absolute path from `import.meta.url`. When the build was started from a cwd spelled `c:\…` (lowercase, as VS Code opens the folder), Vite's `root` was `C:/…` but the alias was `c:\…\src`. Every module reached through `@/…` (all lazy pages) got a `c:/…` id, so their `react` import resolved to a second module id and React (also react-router) was bundled twice. react-dom only sets the hook dispatcher on its own copy. It depended only on the cwd spelling, so it looked random; present since the first commit (3f74346). Vercel builds on Linux, where this case mismatch cannot occur; the deployed site was not checked.
+- **Fix:** `resolve.alias` is `{ "@": "/src" }` (resolved by Vite against `root`, same spelling as every other module). Don't build the alias from `import.meta.url`/absolute paths.
+- **Guard:** the `no-duplicate-modules` plugin in `vite.config.ts` fails the build if a file is bundled under ids differing only in case, or if react / react-dom / scheduler come from more than one copy. Logic in `src/app/bundleGuard.ts`, tested in `src/app/bundle.test.ts` (also checks the alias and that the plugin is wired).
+- The `react` code-splitting group only makes a separate vendor chunk; it is not what keeps React single.
 
 ## Public release configuration
 - The site owner must fill `feedbackEmail`, `repoUrl`, and `siteUrl` in `apps/web/src/config/site.ts`. They deliberately stay empty until supplied: no guessed email/domain/repository. Empty values hide feedback/repository links and canonical/og:url tags. No og:image or sitemap yet.
