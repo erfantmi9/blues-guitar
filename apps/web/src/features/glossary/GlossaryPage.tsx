@@ -14,7 +14,7 @@ import { ProgressBar } from "./components/ProgressBar";
 import { useGlossaryProgress } from "./progress";
 import styles from "./glossary.module.css";
 
-/** /glossary: the 7-level path, search across all terms, and ?lesson=<id> (terms met in one lesson) */
+/** /glossary: the 8-level path, search across all terms, and ?lesson=<id> (terms met in one lesson) */
 export function GlossaryPage() {
   const [params, setParams] = useSearchParams();
   const [query, setQuery] = useState("");

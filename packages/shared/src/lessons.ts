@@ -72,16 +72,28 @@ export type Lesson = {
   };
 };
 
-export type StageMeta = {
-  id: string;
-  number: number;
+/** The three learning tracks; they advance side by side (see the recommended order) */
+export type TrackId = "foundation" | "solo" | "chords";
+
+export type Track = {
+  id: TrackId;
   title: string;
-  goal: string;
-  estimatedSessions: number;
+  summary: string;
 };
 
-/** Stage plus its lessons (built in the content registry) */
-export type Stage = StageMeta & { lessons: Lesson[] };
+export type StageMeta = {
+  /** Stable: lessons point to it by stageId, and existing ids are also DOM anchors ("stage-1") */
+  id: string;
+  trackId: TrackId;
+  title: string;
+  /** One-line goal / summary */
+  goal: string;
+  /** Omitted for coming-soon stages that have no lessons yet */
+  estimatedSessions?: number;
+};
+
+/** Stage plus its lessons (built in the content registry). position = 1-based place within its track. */
+export type Stage = StageMeta & { position: number; lessons: Lesson[] };
 
 export type StageStatus = "coming-soon" | "locked" | "in-progress" | "done";
 

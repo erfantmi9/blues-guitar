@@ -3,8 +3,8 @@ import { readdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { describe, it } from "node:test";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import type { Lesson, LessonProgress, Stage } from "@bg/shared";
-import { firstUnfinishedLesson, isNewUser, lessonStarted, lessonsInOrder, routineFromLesson, sumDurations } from "./home";
+import type { Lesson, LessonProgress } from "@bg/shared";
+import { isNewUser, lessonStarted, lessonsInRecommendedOrder, nextRecommendedLesson, routineFromLesson, sumDurations } from "./home";
 
 const EMPTY: LessonProgress = { checkedCriteria: [], completedAt: null, reportDraft: {}, reports: [] };
 
@@ -19,38 +19,41 @@ const lesson = (id: string, stageId: string, session: number, sections: Lesson["
   completion: { criteria: [], minRequired: 0 },
   report: { questions: [] },
 });
-const stage = (n: number, lessons: Lesson[]): Stage => ({ id: `stage-${n}`, number: n, title: "", goal: "", estimatedSessions: 1, lessons });
+// Lessons as the registry might list them (file order), deliberately not in the recommended order
+const lessons: Lesson[] = [lesson("s3-a", "stage-3", 3), lesson("s1-a", "stage-1", 1), lesson("c1-a", "chords-1", 5), lesson("s2-a", "stage-2", 2)];
+const order = ["s1-a", "s3-a", "c1-a", "s2-a"];
+const ids = (ls: Lesson[]) => ls.map((l) => l.id);
 
-// Deliberately out of order: stage 2 listed first, sessions shuffled
-const stages: Stage[] = [
-  stage(2, [lesson("s2-b", "stage-2", 4), lesson("s2-a", "stage-2", 3)]),
-  stage(1, [lesson("s1-b", "stage-1", 2), lesson("s1-a", "stage-1", 1)]),
-  stage(3, []),
-];
-
-describe("first unfinished lesson", () => {
-  it("follows path order: stage number, then session", () => {
-    assert.deepEqual(lessonsInOrder(stages).map((l) => l.id), ["s1-a", "s1-b", "s2-a", "s2-b"]);
+describe("next recommended lesson", () => {
+  it("follows the recommended order, not file, stage or session order", () => {
+    assert.deepEqual(ids(lessonsInRecommendedOrder(order, lessons)), ["s1-a", "s3-a", "c1-a", "s2-a"]);
   });
-  it("is the first lesson when nothing is done", () => {
-    assert.equal(firstUnfinishedLesson(stages, () => false)?.id, "s1-a");
+  it("nothing finished → the first lesson in the order", () => {
+    assert.equal(nextRecommendedLesson(order, lessons, () => false)?.id, "s1-a");
   });
-  it("skips finished lessons, even if a later one was finished first", () => {
-    const done = new Set(["s1-a", "s2-a"]);
-    assert.equal(firstUnfinishedLesson(stages, (id) => done.has(id))?.id, "s1-b");
+  it("middle of the order: skips finished lessons, even when a later one was finished first", () => {
+    const done = new Set(["s1-a", "c1-a"]);
+    assert.equal(nextRecommendedLesson(order, lessons, (id) => done.has(id))?.id, "s3-a");
   });
-  it("is undefined when every available lesson is done (empty stages don't count)", () => {
-    assert.equal(firstUnfinishedLesson(stages, () => true), undefined);
+  it("everything finished → undefined", () => {
+    assert.equal(nextRecommendedLesson(order, lessons, () => true), undefined);
+  });
+  it("a lesson not in the order comes after the ordered ones; unknown and repeated ids are ignored", () => {
+    const partial = ["ghost", "s2-a", "s1-a", "s2-a"];
+    assert.deepEqual(ids(lessonsInRecommendedOrder(partial, lessons)), ["s2-a", "s1-a", "s3-a", "c1-a"]);
+    const done = new Set(["s2-a", "s1-a"]);
+    assert.equal(nextRecommendedLesson(partial, lessons, (id) => done.has(id))?.id, "s3-a");
+    assert.equal(nextRecommendedLesson([], lessons, () => false)?.id, "s3-a");
   });
 });
 
 describe("new user", () => {
-  const all = lessonsInOrder(stages);
+  const all = lessons;
   const only = (id: string, p: Partial<LessonProgress>) => (lid: string) => (lid === id ? { ...EMPTY, ...p } : EMPTY);
 
   it("nothing stored → new", () => assert.equal(isNewUser(all, () => EMPTY, 0), true));
   it("a learned glossary term → returning", () => assert.equal(isNewUser(all, () => EMPTY, 1), false));
-  it("a ticked criterion → returning", () => assert.equal(isNewUser(all, only("s2-b", { checkedCriteria: ["x"] }), 0), false));
+  it("a ticked criterion → returning", () => assert.equal(isNewUser(all, only("s2-a", { checkedCriteria: ["x"] }), 0), false));
   it("a completed lesson → returning", () => assert.equal(isNewUser(all, only("s1-a", { completedAt: "2026-01-01T00:00:00Z" }), 0), false));
   it("a saved report → returning", () =>
     assert.equal(isNewUser(all, only("s1-a", { reports: [{ id: "r", createdAt: "", answers: {}, checkedCriteria: [] }] }), 0), false));

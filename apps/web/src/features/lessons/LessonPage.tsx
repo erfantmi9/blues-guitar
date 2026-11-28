@@ -7,7 +7,7 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { durationToSeconds, faNum, formatDuration } from "@/lib/format";
 import { NotFoundPage } from "@/app/NotFoundPage";
 import { termsForLesson } from "@/features/glossary/content";
-import { getLesson, getStage } from "./content";
+import { getLesson, getStage, getTrack } from "./content";
 import { useLessonProgress } from "./progress";
 import { useSessionTimer } from "./useSessionTimer";
 import { CompletionChecklist } from "./components/CompletionChecklist";
@@ -59,7 +59,7 @@ function LessonView({ lesson }: { lesson: Lesson }) {
 
       <PageHeader
         title={`جلسه‌ی ${faNum(lesson.session)}: ${lesson.title.replace(/`/g, "")}`}
-        subtitle={`${stage ? `مرحله‌ی ${faNum(stage.number)} · ` : ""}${formatDuration(lesson.duration)}`}
+        subtitle={`${stage ? `${getTrack(stage.trackId)?.title ?? ""} · مرحله‌ی ${faNum(stage.position)} · ` : ""}${formatDuration(lesson.duration)}`}
       />
 
       <Card className={styles.goal}>

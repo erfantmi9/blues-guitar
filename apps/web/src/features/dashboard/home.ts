@@ -1,7 +1,7 @@
 /**
  * Home page logic. Pure: no React, DOM or storage access (progress is passed in), so it is unit-tested.
  */
-import type { Duration, Lesson, LessonProgress, Section, Stage } from "@bg/shared";
+import type { Duration, Lesson, LessonProgress, Section } from "@bg/shared";
 
 /** Has the learner done anything in this lesson? (a ticked criterion, a report, draft text, or completion) */
 export function lessonStarted(p: LessonProgress): boolean {
@@ -18,13 +18,25 @@ export function isNewUser(lessons: readonly Lesson[], progressOf: (id: string) =
   return learnedTerms === 0 && !lessons.some((l) => lessonStarted(progressOf(l.id)));
 }
 
-/** All lessons in path order (stage number, then session) */
-export const lessonsInOrder = (stages: readonly Stage[]): Lesson[] =>
-  [...stages].sort((a, b) => a.number - b.number).flatMap((s) => [...s.lessons].sort((a, b) => a.session - b.session));
+/**
+ * Lessons in the recommended order (content/order.ts). Ids that don't exist are skipped.
+ * A lesson missing from the order (a test forbids this, but just in case) goes at the end,
+ * in its given order, so it is never hidden.
+ */
+export function lessonsInRecommendedOrder(order: readonly string[], lessons: readonly Lesson[]): Lesson[] {
+  const byId = new Map(lessons.map((l) => [l.id, l]));
+  const listed = [...new Set(order)].flatMap((id) => byId.get(id) ?? []);
+  const inOrder = new Set(listed.map((l) => l.id));
+  return [...listed, ...lessons.filter((l) => !inOrder.has(l.id))];
+}
 
-/** First lesson not completed, in path order; undefined when every available lesson is done */
-export function firstUnfinishedLesson(stages: readonly Stage[], isDone: (lessonId: string) => boolean): Lesson | undefined {
-  return lessonsInOrder(stages).find((l) => !isDone(l.id));
+/** "Continue with the next session": first lesson not completed, in the recommended order; undefined when all are done */
+export function nextRecommendedLesson(
+  order: readonly string[],
+  lessons: readonly Lesson[],
+  isDone: (lessonId: string) => boolean,
+): Lesson | undefined {
+  return lessonsInRecommendedOrder(order, lessons).find((l) => !isDone(l.id));
 }
 
 /** Sum of durations; a range if any part is a range */

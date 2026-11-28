@@ -49,6 +49,33 @@
   font-size: var(--fs-sm);
 }
 
+/* Track label on the continue card (پایه / سولو / آکورد و ریتم) */
+.trackTag {
+  display: inline-block;
+  margin-inline-end: var(--space-2);
+  padding: 2px 10px;
+  border-radius: var(--radius-pill);
+  background: var(--accent-soft);
+  color: var(--accent-text);
+}
+
+/* Small "choose another track" link under the continue button */
+.otherTrack {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-block-size: var(--touch);
+  color: var(--muted);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+}
+
+.otherTrack:hover,
+.otherTrack:focus-visible {
+  color: var(--accent-text);
+}
+
 .brandTitle {
   margin: 0;
   font-size: clamp(2.4rem, 11vw, 3.6rem);

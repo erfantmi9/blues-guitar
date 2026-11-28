@@ -1,35 +1,41 @@
-import type { Lesson, Stage } from "@bg/shared";
+import type { Lesson, Stage, TrackId } from "@bg/shared";
+import { buildStages, stagesOfTrack, validateStructure } from "../structure";
+import { recommendedOrder } from "./order";
 import { stageMetas } from "./stages";
+import { tracks } from "./tracks";
 
 /**
  * Lesson registry.
  * To add a lesson: create a file in lessons/ with `export default lesson`.
- * It is picked up automatically; no extra registration line needed.
+ * It is picked up automatically, but it must also be added to recommendedOrder (order.ts).
  */
 const modules = import.meta.glob<{ default: Lesson }>("./lessons/*.ts", { eager: true });
 
 const lessons: Lesson[] = Object.values(modules).map((m) => m.default);
 
-export const stages: Stage[] = stageMetas
-  .slice()
-  .sort((a, b) => a.number - b.number)
-  .map((meta) => ({
-    ...meta,
-    lessons: lessons.filter((l) => l.stageId === meta.id).sort((a, b) => a.session - b.session),
-  }));
+/** All stages, grouped by track (foundation, solo, chords), each in teaching order */
+export const stages: Stage[] = buildStages(stageMetas, tracks, lessons);
+
+/** Every registered lesson (file order; use recommendedOrder for the suggested order) */
+export { lessons, recommendedOrder, tracks };
 
 const lessonById = new Map(lessons.map((l) => [l.id, l]));
 const stageById = new Map(stages.map((s) => [s.id, s]));
 
 export const getLesson = (id: string) => lessonById.get(id);
 export const getStage = (id: string) => stageById.get(id);
+export const getTrack = (id: TrackId) => tracks.find((t) => t.id === id);
+export const trackStages = (id: TrackId) => stagesOfTrack(stages, id);
+/** Track of a lesson (via its stage) */
+export const trackOfLesson = (lesson: Lesson) => {
+  const stage = stageById.get(lesson.stageId);
+  return stage ? getTrack(stage.trackId) : undefined;
+};
 
 // Catch content mistakes early during development
 if (import.meta.env.DEV) {
-  const problems: string[] = [];
-  if (lessonById.size !== lessons.length) problems.push("duplicate lesson id");
+  const problems: string[] = validateStructure(stageMetas, tracks, lessons, recommendedOrder);
   for (const l of lessons) {
-    if (!stageById.has(l.stageId)) problems.push(`${l.id}: unknown stageId "${l.stageId}"`);
     const ids = l.completion.criteria.map((c) => c.id);
     if (new Set(ids).size !== ids.length) problems.push(`${l.id}: duplicate criterion id`);
     if (l.completion.minRequired > ids.length) problems.push(`${l.id}: minRequired > criteria`);

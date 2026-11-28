@@ -15,7 +15,7 @@ type Props = {
 const STRING_COUNT = 6;
 
 /**
- * Visual map of the path: each stage is one fret on a horizontal neck.
+ * Visual map of one track (used for the solo track only): each stage is one fret on a horizontal neck.
  * Visual only (aria-hidden, not focusable); the stage list below is the semantic
  * alternative for screen readers and keyboard users.
  */
@@ -55,7 +55,7 @@ export function PathNeck({ stages, statuses, isLessonDone }: Props) {
               ) : status === "locked" ? (
                 <Lock size={16} />
               ) : (
-                faNum(stage.number)
+                faNum(stage.position)
               )}
             </span>
           );
@@ -83,11 +83,11 @@ export function PathNeck({ stages, statuses, isLessonDone }: Props) {
           ) : (
             <a
               key={stage.id}
-              href={`#stage-${stage.number}`}
+              href={`#${stage.id}`}
               {...common}
               onClick={(e) => {
                 e.preventDefault();
-                const el = document.getElementById(`stage-${stage.number}`);
+                const el = document.getElementById(stage.id);
                 el?.scrollIntoView({ behavior: "smooth", block: "center" });
                 el?.focus({ preventScroll: true });
               }}

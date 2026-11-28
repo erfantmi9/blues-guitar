@@ -1,4 +1,4 @@
-/* Path map: 9 stages = 9 frets on a horizontal neck. Neck colors from global tokens (wood, strings). */
+/* Path map: the solo track's stages as frets on a horizontal neck. Neck colors from global tokens (wood, strings). */
 
 .scroll {
   overflow-x: auto;

@@ -6,16 +6,19 @@ import { glossary, termHref } from "@/features/glossary/content";
 import { ProgressBar } from "@/features/glossary/components/ProgressBar";
 import { useGlossaryProgress } from "@/features/glossary/progress";
 import { firstUnlearned } from "@/lib/content/reference";
-import { stages } from "@/features/lessons/content";
+import { lessons, recommendedOrder, stages, trackOfLesson, trackStages } from "@/features/lessons/content";
 import { PathNeck } from "@/features/lessons/components/PathNeck";
 import { RichText } from "@/features/lessons/components/RichText";
 import { computeStageStatuses, getLessonProgress, isLessonDone } from "@/features/lessons/progress";
 import { faNum, formatDuration } from "@/lib/format";
 import { useStorageRevision } from "@/lib/storage";
-import { firstUnfinishedLesson, isNewUser, lessonsInOrder, routineFromLesson } from "./home";
+import { isNewUser, lessonsInRecommendedOrder, nextRecommendedLesson, routineFromLesson } from "./home";
 import styles from "./Dashboard.module.css";
 
-const allLessons = lessonsInOrder(stages);
+const allLessons = lessonsInRecommendedOrder(recommendedOrder, lessons);
+/** Only the solo track is drawn as a neck; the other tracks are on /path */
+const soloStages = trackStages("solo");
+const readyStages = stages.filter((s) => s.lessons.length > 0).length;
 
 /** Home: a welcome for new learners, "continue where you were" for returning ones. Both read real stored progress. */
 export function DashboardPage() {
@@ -85,14 +88,15 @@ function NewHome() {
         </ul>
       </section>
 
-      <section aria-label="مسیر ۹ مرحله‌ای" className={styles.neck}>
-        <PathNeck stages={stages} statuses={computeStageStatuses(stages, isLessonDone)} isLessonDone={isLessonDone} />
+      <section aria-label="مسیر سولو" className={styles.neck}>
+        <PathNeck stages={soloStages} statuses={computeStageStatuses(soloStages, isLessonDone)} isLessonDone={isLessonDone} />
       </section>
 
       <div className={styles.notes}>
         <p className={styles.note}>
           <GraduationCap size={18} aria-hidden />
-          فعلاً مرحله‌های ۱ تا ۴ آماده‌اند و مرحله‌های ۵ تا ۹ به‌زودی می‌آیند.
+          سه مسیر پایه، سولو و آکورد و ریتم کنار هم پیش می‌روند. فعلاً {faNum(readyStages)} مرحله از{" "}
+          {faNum(stages.length)} آماده است و بقیه به‌زودی می‌آیند.
         </p>
         <p className={styles.note}>
           <ShieldCheck size={18} aria-hidden />
@@ -106,8 +110,9 @@ function NewHome() {
 // ---------- Returning learner ----------
 
 function ReturningHome({ learnedTerms }: { learnedTerms: number }) {
-  const current = firstUnfinishedLesson(stages, isLessonDone);
-  const statuses = computeStageStatuses(stages, isLessonDone);
+  const current = nextRecommendedLesson(recommendedOrder, lessons, isLessonDone);
+  const track = current && trackOfLesson(current);
+  const statuses = computeStageStatuses(soloStages, isLessonDone);
   const doneCount = allLessons.filter((l) => isLessonDone(l.id)).length;
   const reports = allLessons.reduce((n, l) => n + getLessonProgress(l.id).reports.length, 0);
 
@@ -116,7 +121,10 @@ function ReturningHome({ learnedTerms }: { learnedTerms: number }) {
       {current ? (
         <section className={styles.hero} aria-labelledby="home-title">
           <div className={styles.heroText}>
-            <p className={styles.kicker}>{formatDuration(current.duration)}</p>
+            <p className={styles.kicker}>
+              {track && <span className={styles.trackTag}>{track.title}</span>}
+              {formatDuration(current.duration)}
+            </p>
             <h1 id="home-title" className={styles.continueTitle}>
               ادامه‌ی جلسه‌ی {faNum(current.session)}: <RichText text={current.title} />
             </h1>
@@ -126,6 +134,10 @@ function ReturningHome({ learnedTerms }: { learnedTerms: number }) {
                 ادامه
               </Link>
             </div>
+            <Link to="/path" className={styles.otherTrack}>
+              مسیر دیگری انتخاب کن
+              <ChevronLeft size={16} aria-hidden />
+            </Link>
           </div>
           <Logo variant="mark" size={120} className={styles.heroMark} />
         </section>
@@ -150,8 +162,8 @@ function ReturningHome({ learnedTerms }: { learnedTerms: number }) {
         </section>
       )}
 
-      <section aria-label="مسیر ۹ مرحله‌ای" className={styles.neck}>
-        <PathNeck stages={stages} statuses={statuses} isLessonDone={isLessonDone} />
+      <section aria-label="مسیر سولو" className={styles.neck}>
+        <PathNeck stages={soloStages} statuses={statuses} isLessonDone={isLessonDone} />
         <Link to="/path" className={styles.more}>
           همه‌ی مرحله‌ها
           <ChevronLeft size={18} aria-hidden />

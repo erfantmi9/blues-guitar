@@ -28,6 +28,88 @@
 
 /* ===== Path page ===== */
 
+/* Jump links to the three tracks, with progress (3 columns even at 390 px) */
+.trackNav {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-2);
+  margin-block-end: var(--space-5);
+}
+
+.trackChip {
+  display: grid;
+  align-content: center;
+  gap: 2px;
+  min-block-size: var(--touch);
+  padding: var(--space-2);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  text-align: center;
+  text-decoration: none;
+}
+
+.trackChip:hover,
+.trackChip:focus-visible {
+  border-color: var(--accent);
+}
+
+.trackChipTitle {
+  font-weight: 700;
+}
+
+.tracks {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-6);
+}
+
+.track {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-4);
+  /* clear the sticky header (~56px) when jumped to from the track links */
+  scroll-margin-block-start: calc(var(--touch) + var(--space-5));
+}
+
+.track:focus {
+  outline: none;
+}
+
+.trackHead {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.trackTitle {
+  margin: 0;
+  font-size: var(--fs-xl);
+}
+
+.trackSummary {
+  margin: 0;
+  color: var(--muted);
+}
+
+/* The recommended next lesson */
+.lessonLink[data-next] {
+  outline: 1px solid var(--accent);
+}
+
+.nextTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  background: var(--accent-soft);
+  color: var(--accent-text);
+}
+
 .stageList {
   grid-template-columns: minmax(0, 1fr);
   list-style: none;
